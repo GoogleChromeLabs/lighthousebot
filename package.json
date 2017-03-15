@@ -13,5 +13,8 @@
   "bugs": {
     "url": "https://github.com/ebidel/lighthouse-ci/issues"
   },
-  "homepage": "https://github.com/ebidel/lighthouse-ci#readme"
+  "homepage": "https://github.com/ebidel/lighthouse-ci#readme",
+  "dependencies": {
+    "github": "^9.2.0"
+  }
 }
