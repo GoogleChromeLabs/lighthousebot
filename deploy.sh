@@ -1,24 +1,36 @@
 #!/bin/sh
 
 deployVersion=$1
+app=$2
+usage="Usage: deploy.sh `date +%Y-%m-%d` builder|frontend "
+#readonly APPDIR=$(dirname $BASH_SOURCE)
 
 if [ -z "$deployVersion" ]
 then
   echo "App version not specified."
-  echo "Usage: deploy.sh `date +%Y-%m-%d`"
+  echo $usage
   exit 0
 fi
 
-readonly APPDIR=$(dirname $BASH_SOURCE)
+if [ -z "$app" ]
+then
+  echo 'Please specify "builder" or "frontend" target to deploy.'
+  echo $usage
+  exit 0
+fi
 
-#echo "\nBuilding app version: $deployVersion\n"
-#gulp
+echo "Deploying $app version: $deployVersion"
 
-echo "Deploying frontend version: $deployVersion"
-gcloud app deploy frontend/app.yaml \
-    --project lighthouse-ci --version $deployVersion
-    #--account ericbidelman@google.com
-
-#echo "Deploying builder version: $deployVersion"
-#gcloud app deploy builder/app.yaml \
-#    --project lighthouse-ci --version $deployVersion
+if [ $app == "builder" ]
+then
+  gcloud app deploy builder/app.yaml \
+      --project lighthouse-ci --version $deployVersion
+elif [ $app == "frontend" ]
+then
+  gcloud app deploy frontend/app.yaml \
+      --project lighthouse-ci --version $deployVersion
+      #--account ericbidelman@google.com
+else
+  echo $usage
+  exit 0
+fi
