@@ -1,0 +1,22 @@
+runtime: custom
+env: flex
+#vm: true
+#service: lighthouse-machine
+threadsafe: false
+
+health_check:
+  enable_health_check: False
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 1
+
+resources:
+  cpu: 2
+  memory_gb: 7.5
+  disk_size_gb: 10
+
+handlers:
+- url: /.*
+  script: IGNORED
+  secure: always

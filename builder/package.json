@@ -1,0 +1,13 @@
+{
+  "name": "lighthouse_ci",
+  "version": "0.0.1",
+  "description": "A Docker CI server for the Lighthouse",
+  "author": "Cedric Bellet, Eric Bidelman <ebidel@>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.13.3"
+  }
+}
