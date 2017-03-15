@@ -14,11 +14,11 @@ readonly APPDIR=$(dirname $BASH_SOURCE)
 #echo "\nBuilding app version: $deployVersion\n"
 #gulp
 
-#echo "Deploying frontend version: $deployVersion"
-#gcloud app deploy frontend/app.yaml \
-#    --project lighthouse-ci --version $deployVersion
-#    #--account ericbidelman@google.com
-
-echo "Deploying builder version: $deployVersion"
-gcloud app deploy builder/app.yaml \
+echo "Deploying frontend version: $deployVersion"
+gcloud app deploy frontend/app.yaml \
     --project lighthouse-ci --version $deployVersion
+    #--account ericbidelman@google.com
+
+#echo "Deploying builder version: $deployVersion"
+#gcloud app deploy builder/app.yaml \
+#    --project lighthouse-ci --version $deployVersion
