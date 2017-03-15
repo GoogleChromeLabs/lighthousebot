@@ -1,20 +1,10 @@
 {
-  "name": "lighthouse-ci",
   "version": "0.0.1",
   "description": "Lighthouse CI",
   "main": "index.js",
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ebidel/lighthouse-ci.git"
-  },
-  "author": "",
   "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/ebidel/lighthouse-ci/issues"
-  },
-  "homepage": "https://github.com/ebidel/lighthouse-ci#readme",
   "dependencies": {
+    "express": "^4.15.2",
     "github": "^9.2.0"
   }
 }
