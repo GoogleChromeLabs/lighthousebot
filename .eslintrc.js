@@ -44,6 +44,7 @@ module.exports = {
     "valid-jsdoc": 0,
     "comma-dangle": 0,
     "arrow-parens": 0,
+    "no-console": 0
   },
   "parserOptions": {
     "ecmaVersion": 6,
