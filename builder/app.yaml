@@ -1,7 +1,7 @@
 runtime: custom
 env: flex
 #vm: true
-#service: lighthouse-machine
+service: builder
 threadsafe: false
 
 health_check:
