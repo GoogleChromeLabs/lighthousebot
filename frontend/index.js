@@ -16,10 +16,29 @@
 'use strict';
 
 const express = require('express');
+const fetch = require('node-fetch');
+
 const app = express();
+const testUrl = 'https://www.chromestatus.com/features';
+
+function getOverallScore(results) {
+  const scoredAggregations = results.aggregations.filter(a => a.scored);
+  const total = scoredAggregations.reduce((sum, aggregation) => {
+    return sum + aggregation.total;
+  }, 0);
+  return (total / scoredAggregations.length) * 100;
+}
 
 app.get('/', (req, res) => {
-  res.status(200).send('Hello, world!');
+  const url = `https://builder-dot-lighthouse-ci.appspot.com/ci?format=json&url=${testUrl}`;
+
+  fetch(url)
+    .then(resp => resp.json())
+    .then(json => {
+      res.status(200).send('Lighthouse score: ' + getOverallScore(json));
+    }).catch(err => {
+      res.status(500).send('ERRO: ' + err.message);
+    });
 });
 
 // Start the server

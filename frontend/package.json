@@ -8,6 +8,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "express": "^4.15.2",
-    "github": "^9.2.0"
+    "github": "^9.2.0",
+    "node-fetch": "^1.6.3"
   }
 }
