@@ -1,12 +1,16 @@
 {
   "version": "0.0.1",
+  "private": true,
   "description": "Lighthouse CI",
   "main": "index.js",
+  "license": "Apache-2.0",
   "scripts": {
     "start": "OAUTH_TOKEN=`cat .oauth_token` node index.js",
     "build": "./build.sh"
   },
-  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=7.7.0"
+  },
   "dependencies": {
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
