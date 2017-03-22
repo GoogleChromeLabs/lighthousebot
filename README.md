@@ -6,7 +6,9 @@ to your site's Github repo.
 ## How to integrate with your repo
 
 1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo.
-2. Add the webhook to repo.
+2. Add the webhook to repo: `https://lighthouse-ci.appspot.com/github_handler`
+    - Change the Content type dropwdown to "application/json".
+    - Select "Let me select individual events" and enable the "Pull request" and "Status" events.
 
 ## Development
 
