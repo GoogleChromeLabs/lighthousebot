@@ -12,7 +12,7 @@ module.exports = {
       "SwitchCase": 1,
       "VariableDeclarator": 2
     }],
-    "max-len": [2, 80, {
+    "max-len": [2, 100, {
       "ignoreComments": true,
       "ignoreUrls": true,
       "tabWidth": 2
