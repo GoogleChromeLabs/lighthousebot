@@ -5,17 +5,25 @@ to your site's Github repo.
 
 ## How to integrate with your repo
 
-- 1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo.
--  Add the webhook to repo.
+1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo.
+2. Add the webhook to repo.
 
 ## Development
 
-Generate a new OAuth2 token
+Initial setup:
 
-1. Sign in to the `lighthousebot` Github account, and visible https://github.com/settings/tokens.
-- Regenerate the token. **Important**: Doing this will invalidate the previous token and require you to redeploy the server so it uses the new credentials.
-- Create `frontend/.oauth_token` and copy in the token value.
+1. Lookup the shared oauth2 token.
+2. Create `frontend/.oauth_token` and copy in the token value.
+3. Run `cd frontend; ./build.sh` to generate its app.yaml
 
-Running the server:
+Run the dev server:
 
     yarn start
+
+### Generate a new OAuth2 token
+
+If you need to generate a new
+
+1. Sign in to the `lighthousebot` Github account, and visible https://github.com/settings/tokens.
+2. Regenerate the token. **Important**: this invalidates the existing token.
+3. Update token in `frontend/.oauth_token`.

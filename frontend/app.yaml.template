@@ -1,0 +1,9 @@
+runtime: nodejs
+env: flex
+
+env_variables:
+  OAUTH_TOKEN: '___OAUTHTOKEN___'
+
+automatic_scaling:
+  min_num_instances: 1
+  max_num_instances: 1

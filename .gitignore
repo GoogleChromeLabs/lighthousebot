@@ -4,3 +4,4 @@ npm-debug.log
 .vscode
 
 frontend/.oauth_token
+frontend/app.yaml

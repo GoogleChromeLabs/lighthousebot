@@ -3,7 +3,8 @@
   "description": "Lighthouse CI",
   "main": "index.js",
   "scripts": {
-    "start": "OAUTH_TOKEN=`cat .oauth_token` node index.js"
+    "start": "OAUTH_TOKEN=`cat .oauth_token` node index.js",
+    "build": "./build.sh"
   },
   "license": "Apache-2.0",
   "dependencies": {
