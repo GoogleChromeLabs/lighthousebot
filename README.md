@@ -14,7 +14,6 @@ Initial setup:
 
 1. Lookup the shared oauth2 token.
 2. Create `frontend/.oauth_token` and copy in the token value.
-3. Run `cd frontend; ./build.sh` to generate its app.yaml
 
 Run the dev server:
 
