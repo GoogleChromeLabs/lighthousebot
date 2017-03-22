@@ -23,8 +23,6 @@ const jsdom = require('jsdom');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
-// lighthousebot
-const OAUTH_TOKEN = process.env.OAUTH_TOKEN || '<TOKEN>';
 const WPT_API_KEY = 'A.04c7244ba25a5d6d717b0343a821aa59';
 const WPT_PR_MAP = new Map();
 
@@ -33,7 +31,7 @@ const STAGING_URL = 'https://www.chromestatus.com/features';
 const FAIL_SCORE = 85;
 
 const github = new Github({debug: false, Promise: Promise});
-github.authenticate({type: 'oauth', token: OAUTH_TOKEN});
+github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
 
 class LighthouseCI {
 
