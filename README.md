@@ -21,7 +21,17 @@ Run the dev server:
 
     yarn start
 
-### Generate a new OAuth2 token
+### Deploy
+
+Deploy the webhook (frontend):
+
+    ./deploy.sh 2017-03-22 frontend
+
+Deploy the CI server (builder):
+
+    ./deploy.sh 2017-03-22 builder
+
+#### Generate a new OAuth2 token
 
 If you need to generate a new
 
