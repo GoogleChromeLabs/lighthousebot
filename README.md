@@ -9,6 +9,16 @@ to your site's Github repo.
 2. Add the webhook to repo: `https://lighthouse-ci.appspot.com/github_handler`
     - Change the Content type dropwdown to "application/json".
     - Select "Let me select individual events" and enable the "Pull request" and "Status" events.
+3. Add a `lighthouse.ci.json` file in the base of your repo.
+
+### `lighthouse.ci.json`
+
+Definition:
+
+    {
+      "minPassScore": 85, // Minimum LH score for PR to pass as "success".
+      "stagingUrl": "<URL>" // Staging URL to test PR changes on.
+    }
 
 ## Development
 

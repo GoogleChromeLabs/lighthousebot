@@ -23,12 +23,9 @@ const jsdom = require('jsdom');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
+const CI_FILE = 'lighthouse.ci.json';
 const WPT_API_KEY = 'A.04c7244ba25a5d6d717b0343a821aa59';
 const WPT_PR_MAP = new Map();
-
-// TODO: invent and stick in lighthouse_ci.json
-const STAGING_URL = 'https://www.chromestatus.com/features';
-const FAIL_SCORE = 85;
 
 const github = new Github({debug: false, Promise: Promise});
 github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
@@ -41,7 +38,7 @@ class LighthouseCI {
     };
   }
 
-  testOnHeadlessChrome(testUrl) {
+  static testOnHeadlessChrome(testUrl) {
     const builderUrl = 'https://builder-dot-lighthouse-ci.appspot.com/ci' +
                        `?format=json&url=${testUrl}`;
     return fetch(builderUrl)
@@ -93,6 +90,36 @@ class LighthouseCI {
   }
 
   /**
+   * Calculates an overall score across all sub audits.
+   * @param {!Object} req Express request.
+   * @return {!Promise<Object>}
+   */
+  static fetchLighthouseCIFile(req) {
+    const fullName = req.body.pull_request.base.repo.full_name;
+    const branch = req.body.pull_request.base.ref;
+    const url = `https://raw.githubusercontent.com/${fullName}/${branch}/${CI_FILE}`;
+
+    const prInfo = {
+      repo: req.body.pull_request.head.repo.name,
+      owner: req.body.pull_request.head.repo.owner.login,
+      sha: req.body.pull_request.head.sha
+    };
+
+    return fetch(url).then(resp => {
+      if (resp.status !== 200) {
+        throw new Error(`Missing ${url}`);
+      }
+      return resp.json();
+    })
+    .catch(err => {
+      return LighthouseCI.updateGithubStatus(Object.assign({
+        state: 'error',
+        description: `Error. ${err.message}`
+      }, prInfo));
+    });
+  }
+
+  /**
    * Updates associated PR status.
    * @param {!Object=} opts Options to set the status with.
    * @return {!Promise<Object>} Status object from Github API.
@@ -109,9 +136,10 @@ class LighthouseCI {
   /**
    * Runs Lighthouse against the changes in a PR.
    * @param {!Object} req Express request.
+   * @param {!{minPassScore: number, stagingUrl: string}} config
    * @return {!Promise<Object>}
    */
-  static processPullRequest(req) {
+  static processPullRequest(req, config) {
     const pingbackUrl = `${req.protocol}://${req.get('host')}/wpt_ping`;
     const prInfo = {
       repo: req.body.pull_request.head.repo.name,
@@ -119,9 +147,10 @@ class LighthouseCI {
       sha: req.body.pull_request.head.sha
     };
 
-    return LighthouseCI.testOnWebpageTest(STAGING_URL, pingbackUrl)
+    return LighthouseCI.testOnWebpageTest(config.stagingUrl, pingbackUrl)
       .then(json => {
-        WPT_PR_MAP.set(json.data.testId, prInfo); // stash wpt id -> github pr sha mapping.
+        // stash wpt id -> github pr sha mapping.
+        WPT_PR_MAP.set(json.data.testId, {prInfo, config});
 
         return LighthouseCI.updateGithubStatus(Object.assign({
           state: 'pending',
@@ -141,15 +170,16 @@ class LighthouseCI {
   /**
    * Updates pass/fail state of PR.
    * @param {!Object} lhResults Lighthouse results object.
+   * @param {!{minPassScore: number, stagingUrl: string}} config
    * @param {!Object} opts Options to set the status with.
    * @return {!Promise<Object>} Status object from Github API.
    */
-  static assignPassFailToPR(lhResults, opts) {
+  static assignPassFailToPR(lhResults, config, opts) {
     const score = this.getOverallScore(lhResults);
 
     const status = Object.assign({
       description: `Auditing complete. Lighthouse score: ${score}/100`,
-      state: score < FAIL_SCORE ? 'failure' : 'success'
+      state: score < config.minPassScore ? 'failure' : 'success'
     }, opts);
 
     // eslint-disable-next-line no-unused-vars
@@ -172,12 +202,14 @@ app.post('/github_handler', (req, res) => {
   }
 
   if (req.headers['x-github-event'] === 'pull_request') {
-    if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
-      LighthouseCI.processPullRequest(req).then(result => {
-        res.status(200).send(result);
-      });
+    // if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
+      LighthouseCI.fetchLighthouseCIFile(req)
+        .then(config => LighthouseCI.processPullRequest(req, config))
+        .then(result => {
+          res.status(200).send(result);
+        });
       return;
-    }
+    // }
   }
 
   res.status(200).send('');
@@ -193,7 +225,7 @@ app.get('/wpt_ping', (req, res) => {
 
   const reportUrl = `https://www.webpagetest.org/lighthouse.php?test=${testId}&run=1`;
   const resultsUrl = `https://www.webpagetest.org/result/${testId}/`;
-  const prInfo = WPT_PR_MAP.get(testId);
+  const {prInfo, config} = WPT_PR_MAP.get(testId);
 
   // TODO(ericbidelman): Get LH json results directly from WPT when they're available.
   fetch(reportUrl)
@@ -213,7 +245,7 @@ app.get('/wpt_ping', (req, res) => {
 
       const lhResults = JSON.parse(el.textContent);
 
-      return LighthouseCI.assignPassFailToPR(lhResults, baseOpts).then(score => {
+      return LighthouseCI.assignPassFailToPR(lhResults, config, baseOpts).then(score => {
         WPT_PR_MAP.delete(testId); // Cleanup
         res.status(200).send({score});
       });
