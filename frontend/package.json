@@ -15,7 +15,6 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "github": "^9.2.0",
-    "jsdom": "^9.12.0",
     "node-fetch": "^1.6.3"
   }
 }

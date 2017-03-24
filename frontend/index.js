@@ -19,7 +19,6 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const fetch = require('node-fetch'); // polyfill
 const Github = require('github');
-const jsdom = require('jsdom');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
@@ -202,14 +201,14 @@ app.post('/github_handler', (req, res) => {
   }
 
   if (req.headers['x-github-event'] === 'pull_request') {
-    // if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
+    if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
       LighthouseCI.fetchLighthouseCIFile(req)
         .then(config => LighthouseCI.processPullRequest(req, config))
         .then(result => {
           res.status(200).send(result);
         });
       return;
-    // }
+    }
   }
 
   res.status(200).send('');
@@ -223,27 +222,16 @@ app.get('/wpt_ping', (req, res) => {
     return;
   }
 
-  const reportUrl = `https://www.webpagetest.org/lighthouse.php?test=${testId}&run=1`;
-  const resultsUrl = `https://www.webpagetest.org/result/${testId}/`;
   const {prInfo, config} = WPT_PR_MAP.get(testId);
 
-  // TODO(ericbidelman): Get LH json results directly from WPT when they're available.
-  fetch(reportUrl)
-    .then(resp => resp.text())
-    .then(text => {
-      const baseOpts = Object.assign({target_url: resultsUrl}, prInfo);
+  fetch(`https://www.webpagetest.org/jsonResult.php?test=${testId}`)
+    .then(resp => resp.json())
+    .then(json => {
+      const baseOpts = Object.assign({
+        target_url: `https://www.webpagetest.org/lighthouse.php?test=${testId}`
+      }, prInfo);
 
-      const doc = jsdom.jsdom(text, {});
-
-      const el = doc.querySelector('#lhresults-dump');
-      if (!el) {
-        return LighthouseCI.updateGithubStatus(Object.assign({
-          state: 'error',
-          description: 'WebpageTest results page didn\'t contain a Lighthouse report.'
-        }, baseOpts));
-      }
-
-      const lhResults = JSON.parse(el.textContent);
+      const lhResults = json.data.lighthouse;
 
       return LighthouseCI.assignPassFailToPR(lhResults, config, baseOpts).then(score => {
         WPT_PR_MAP.delete(testId); // Cleanup
