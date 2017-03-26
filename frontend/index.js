@@ -22,7 +22,7 @@ const Github = require('github');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
-const CI_FILE = 'lighthouse.ci.json';
+// const CI_FILE = 'lighthouse.ci.json';
 const WPT_API_KEY = 'A.04c7244ba25a5d6d717b0343a821aa59';
 const WPT_PR_MAP = new Map();
 
@@ -62,7 +62,9 @@ class LighthouseCI {
     params.set('k', WPT_API_KEY);
     params.set('f', 'json');
     params.set('pingback', pingback); // The pingback is passed an "id" parameter of the test.
-    params.set('location', 'Dulles_Nexus5:Chrome.3GFast'); // match to LH
+    // TODO: match emulation to LH settings. Nexus 5 doesn't work atm.
+    // params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3GFast');
+    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
     params.set('lighthouse', 1);
     params.set('url', testUrl);
 
@@ -149,8 +151,14 @@ class LighthouseCI {
 
     return LighthouseCI.testOnWebpageTest(config.stagingUrl, config.pingbackUrl)
       .then(json => {
+        if (!json.data || !json.data.testId) {
+          throw new Error('Lighthouse results were not found in WebPageTest results.');
+        }
+
+        const wptTestId = json.data.testId;
+
         // stash wpt id -> github pr sha mapping.
-        WPT_PR_MAP.set(json.data.testId, {prInfo, config});
+        WPT_PR_MAP.set(wptTestId, {prInfo, config});
 
         return LighthouseCI.updateGithubStatus(Object.assign({
           state: 'pending',
@@ -202,7 +210,7 @@ app.get('/', (req, res) => {
   res.status(200).send('Nothing to see here');
 });
 
-// app.post('/github_handler', (req, res) => {
+// app.post('/github_hook', (req, res) => {
 //   if (!('x-github-event' in req.headers)) {
 //     res.status(400).send('Not a request from Github.');
 //     return;
@@ -230,10 +238,14 @@ app.get('/wpt_ping', (req, res) => {
     return;
   }
 
+  const {prInfo, config} = WPT_PR_MAP.get(wptTestId);
+
   fetch(`https://www.webpagetest.org/jsonResult.php?test=${wptTestId}`)
     .then(resp => resp.json())
     .then(json => {
-      const {prInfo, config} = WPT_PR_MAP.get(wptTestId);
+      if (!json.data || !json.data.testId) {
+        throw new Error('Lighthouse results were not found in WebPageTest results.');
+      }
 
       const baseOpts = Object.assign({
         target_url: `https://www.webpagetest.org/lighthouse.php?test=${wptTestId}`
@@ -246,53 +258,14 @@ app.get('/wpt_ping', (req, res) => {
         res.status(200).send({score});
       });
     }).catch(err => {
+      console.error(err);
+      LighthouseCI.updateGithubStatus(Object.assign({
+        state: 'error',
+        description: `Error. ${err.message}`
+      }, prInfo));
       res.json(err);
     });
 });
-
-// app.post('/github_status', (req, res) => {
-//   if (!('travis-repo-slug' in req.headers)) {
-//     console.log('Not a request from Travis.');
-//     res.status(400).send('Not a request from Travis.');
-//     return;
-//   }
-
-//   const payload = JSON.parse(req.body.payload);
-//   const buildPassing = payload.status === 0;
-//   const isPR = payload.pull_request;
-
-//   console.log(buildPassing, isPR);
-
-//   if (!(isPR && buildPassing)) {
-//     console.log('Not a passing pull request');
-//     res.status(400).send('Not a passing pull request');
-//     return;
-//   }
-
-//   const params = {
-//     owner: payload.repository.owner_name,
-//     repo: payload.repository.name,
-//     number: payload.pull_request_number
-//   };
-
-//   github.pullRequests.get(params).then(pr => {
-//     req.body.pull_request = pr;
-
-//     LighthouseCI.fetchLighthouseCIFile(req)
-//       .then(config => {
-//         const GAE_APP_ID = 'cr-status';
-//         config.stagingUrl = `https://pr-${params.number}-dot-${GAE_APP_ID}.appspot.com`;
-//         return LighthouseCI.processPullRequest(req, config);
-//       })
-//       .then(result => {
-//         res.status(200).send(result);
-//       });
-//   }).catch(() => {
-//     res.status(404).send('Pull request does not exist.');
-//   });
-
-//   // res.status(200).json('');
-// });
 
 app.post('/github_status', (req, res) => {
   const config = Object.assign({
