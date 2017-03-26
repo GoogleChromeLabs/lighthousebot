@@ -29,6 +29,7 @@ const WPT_PR_MAP = new Map();
 const github = new Github({debug: false, Promise: Promise});
 github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
 
+
 class LighthouseCI {
 
   static get DEFAULT_STATUS_OPTS() {
@@ -61,7 +62,7 @@ class LighthouseCI {
     params.set('k', WPT_API_KEY);
     params.set('f', 'json');
     params.set('pingback', pingback); // The pingback is passed an "id" parameter of the test.
-    params.set('location', 'Dulles_MotoG4:Chrome.3G_EM');
+    params.set('location', 'Dulles_Nexus5:Chrome.3GFast'); // match to LH
     params.set('lighthouse', 1);
     params.set('url', testUrl);
 
@@ -88,35 +89,37 @@ class LighthouseCI {
     return Math.round((total / scoredAggregations.length) * 100);
   }
 
-  /**
-   * Calculates an overall score across all sub audits.
-   * @param {!Object} req Express request.
-   * @return {!Promise<Object>}
-   */
-  static fetchLighthouseCIFile(req) {
-    const fullName = req.body.pull_request.base.repo.full_name;
-    const branch = req.body.pull_request.base.ref;
-    const url = `https://raw.githubusercontent.com/${fullName}/${branch}/${CI_FILE}`;
+  // /**
+  //  * Calculates an overall score across all sub audits.
+  //  * @param {!Object} req Express request.
+  //  * @return {!Promise<Object>}
+  //  */
+  // static fetchLighthouseCIFile(req) {
+  //   const fullName = req.body.pull_request.base.repo.full_name;
+  //   const branch = req.body.pull_request.base.ref;
+  //   const url = `https://raw.githubusercontent.com/${fullName}/${branch}/${CI_FILE}`;
 
-    const prInfo = {
-      repo: req.body.pull_request.head.repo.name,
-      owner: req.body.pull_request.head.repo.owner.login,
-      sha: req.body.pull_request.head.sha
-    };
+  //   const prInfo = {
+  //     repo: req.body.pull_request.head.repo.name,
+  //     owner: req.body.pull_request.head.repo.owner.login,
+  //     sha: req.body.pull_request.head.sha
+  //   };
 
-    return fetch(url).then(resp => {
-      if (resp.status !== 200) {
-        throw new Error(`Missing ${url}`);
-      }
-      return resp.json();
-    })
-    .catch(err => {
-      return LighthouseCI.updateGithubStatus(Object.assign({
-        state: 'error',
-        description: `Error. ${err.message}`
-      }, prInfo));
-    });
-  }
+  //   console.log(`Fetching ${url}`);
+
+  //   return fetch(url).then(resp => {
+  //     if (resp.status !== 200) {
+  //       throw new Error(`Missing ${url}`);
+  //     }
+  //     return resp.json();
+  //   })
+  //   .catch(err => {
+  //     return LighthouseCI.updateGithubStatus(Object.assign({
+  //       state: 'error',
+  //       description: `Error. ${err.message}`
+  //     }, prInfo));
+  //   });
+  // }
 
   /**
    * Updates associated PR status.
@@ -134,26 +137,24 @@ class LighthouseCI {
 
   /**
    * Runs Lighthouse against the changes in a PR.
-   * @param {!Object} req Express request.
-   * @param {!{minPassScore: number, stagingUrl: string}} config
+   * @param {!{Object} config
    * @return {!Promise<Object>}
    */
-  static processPullRequest(req, config) {
-    const pingbackUrl = `${req.protocol}://${req.get('host')}/wpt_ping`;
+  static processPullRequest(config) {
     const prInfo = {
-      repo: req.body.pull_request.head.repo.name,
-      owner: req.body.pull_request.head.repo.owner.login,
-      sha: req.body.pull_request.head.sha
+      repo: config.repo.name,
+      owner: config.repo.owner,
+      sha: config.pr.sha
     };
 
-    return LighthouseCI.testOnWebpageTest(config.stagingUrl, pingbackUrl)
+    return LighthouseCI.testOnWebpageTest(config.stagingUrl, config.pingbackUrl)
       .then(json => {
         // stash wpt id -> github pr sha mapping.
         WPT_PR_MAP.set(json.data.testId, {prInfo, config});
 
         return LighthouseCI.updateGithubStatus(Object.assign({
           state: 'pending',
-          description: 'Auditing these changes...',
+          description: 'Auditing PR changes...',
           target_url: json.data.userUrl
         }, prInfo));
       })
@@ -169,16 +170,23 @@ class LighthouseCI {
   /**
    * Updates pass/fail state of PR.
    * @param {!Object} lhResults Lighthouse results object.
-   * @param {!{minPassScore: number, stagingUrl: string}} config
+   * @param {!{minPassScore: number}} config
    * @param {!Object} opts Options to set the status with.
    * @return {!Promise<Object>} Status object from Github API.
    */
   static assignPassFailToPR(lhResults, config, opts) {
     const score = this.getOverallScore(lhResults);
+    const passing = config.minPassScore <= score;
+
+    let description = `Failed. New Lighthouse score would be ${score}/100 ` +
+                      `(required ${config.minPassScore}+).`;
+    if (passing) {
+      description = `Passed. New Lighthouse score would be ${score}/100.`;
+    }
 
     const status = Object.assign({
-      description: `Auditing complete. Lighthouse score: ${score}/100`,
-      state: score < config.minPassScore ? 'failure' : 'success'
+      description,
+      state: passing ? 'success' : 'failure'
     }, opts);
 
     // eslint-disable-next-line no-unused-vars
@@ -194,52 +202,108 @@ app.get('/', (req, res) => {
   res.status(200).send('Nothing to see here');
 });
 
-app.post('/github_handler', (req, res) => {
-  if (!('x-github-event' in req.headers)) {
-    res.status(400).send('Not a request from Github.');
-    return;
-  }
+// app.post('/github_handler', (req, res) => {
+//   if (!('x-github-event' in req.headers)) {
+//     res.status(400).send('Not a request from Github.');
+//     return;
+//   }
 
-  if (req.headers['x-github-event'] === 'pull_request') {
-    if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
-      LighthouseCI.fetchLighthouseCIFile(req)
-        .then(config => LighthouseCI.processPullRequest(req, config))
-        .then(result => {
-          res.status(200).send(result);
-        });
-      return;
-    }
-  }
+//   if (req.headers['x-github-event'] === 'pull_request') {
+//     if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
+//       LighthouseCI.fetchLighthouseCIFile(req)
+//         .then(config => LighthouseCI.processPullRequest(req, config))
+//         .then(result => {
+//           res.status(200).send(result);
+//         });
+//       return;
+//     }
+//   }
 
-  res.status(200).send('');
-});
+//   res.status(200).send('');
+// });
 
 app.get('/wpt_ping', (req, res) => {
-  const testId = req.query.id;
+  const wptTestId = req.query.id;
 
-  if (!WPT_PR_MAP.has(testId)) {
+  if (!WPT_PR_MAP.has(wptTestId)) {
     res.status(404).send('Unknown WebPageTest id.');
     return;
   }
 
-  const {prInfo, config} = WPT_PR_MAP.get(testId);
-
-  fetch(`https://www.webpagetest.org/jsonResult.php?test=${testId}`)
+  fetch(`https://www.webpagetest.org/jsonResult.php?test=${wptTestId}`)
     .then(resp => resp.json())
     .then(json => {
+      const {prInfo, config} = WPT_PR_MAP.get(wptTestId);
+
       const baseOpts = Object.assign({
-        target_url: `https://www.webpagetest.org/lighthouse.php?test=${testId}`
+        target_url: `https://www.webpagetest.org/lighthouse.php?test=${wptTestId}`
       }, prInfo);
 
       const lhResults = json.data.lighthouse;
 
       return LighthouseCI.assignPassFailToPR(lhResults, config, baseOpts).then(score => {
-        WPT_PR_MAP.delete(testId); // Cleanup
+        WPT_PR_MAP.delete(wptTestId); // Cleanup
         res.status(200).send({score});
       });
     }).catch(err => {
       res.json(err);
     });
+});
+
+// app.post('/github_status', (req, res) => {
+//   if (!('travis-repo-slug' in req.headers)) {
+//     console.log('Not a request from Travis.');
+//     res.status(400).send('Not a request from Travis.');
+//     return;
+//   }
+
+//   const payload = JSON.parse(req.body.payload);
+//   const buildPassing = payload.status === 0;
+//   const isPR = payload.pull_request;
+
+//   console.log(buildPassing, isPR);
+
+//   if (!(isPR && buildPassing)) {
+//     console.log('Not a passing pull request');
+//     res.status(400).send('Not a passing pull request');
+//     return;
+//   }
+
+//   const params = {
+//     owner: payload.repository.owner_name,
+//     repo: payload.repository.name,
+//     number: payload.pull_request_number
+//   };
+
+//   github.pullRequests.get(params).then(pr => {
+//     req.body.pull_request = pr;
+
+//     LighthouseCI.fetchLighthouseCIFile(req)
+//       .then(config => {
+//         const GAE_APP_ID = 'cr-status';
+//         config.stagingUrl = `https://pr-${params.number}-dot-${GAE_APP_ID}.appspot.com`;
+//         return LighthouseCI.processPullRequest(req, config);
+//       })
+//       .then(result => {
+//         res.status(200).send(result);
+//       });
+//   }).catch(() => {
+//     res.status(404).send('Pull request does not exist.');
+//   });
+
+//   // res.status(200).json('');
+// });
+
+app.post('/github_status', (req, res) => {
+  const config = Object.assign({
+    pingbackUrl: `${req.protocol}://${req.get('host')}/wpt_ping`
+  }, req.body);
+
+  LighthouseCI.processPullRequest(config).then(result => {
+    res.status(200).send(result);
+  }).catch(() => {
+    res.status(404).send('Unable to process pull request.');
+  });
 });
 
 const PORT = process.env.PORT || 8080;
