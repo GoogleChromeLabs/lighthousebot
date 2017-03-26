@@ -29,6 +29,13 @@ const WPT_PR_MAP = new Map();
 const github = new Github({debug: false, Promise: Promise});
 github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
 
+function handleError(err, prInfo) {
+  console.error(err);
+  LighthouseCI.updateGithubStatus(Object.assign({
+    state: 'error',
+    description: `Error. ${err.message}`
+  }, prInfo));
+}
 
 class LighthouseCI {
 
@@ -167,11 +174,7 @@ class LighthouseCI {
         }, prInfo));
       })
       .catch(err => {
-        console.error(err);
-        return LighthouseCI.updateGithubStatus(Object.assign({
-          state: 'error',
-          description: `Auditing error. ${err.message}`
-        }, prInfo));
+        handleError(err, prInfo);
       });
   }
 
@@ -243,7 +246,7 @@ app.get('/wpt_ping', (req, res) => {
   fetch(`https://www.webpagetest.org/jsonResult.php?test=${wptTestId}`)
     .then(resp => resp.json())
     .then(json => {
-      if (!json.data || !json.data.testId) {
+      if (!json.data || !json.data.lighthouse) {
         throw new Error('Lighthouse results were not found in WebPageTest results.');
       }
 
@@ -258,11 +261,7 @@ app.get('/wpt_ping', (req, res) => {
         res.status(200).send({score});
       });
     }).catch(err => {
-      console.error(err);
-      LighthouseCI.updateGithubStatus(Object.assign({
-        state: 'error',
-        description: `Error. ${err.message}`
-      }, prInfo));
+      handleError(err, prInfo);
       res.json(err);
     });
 });
