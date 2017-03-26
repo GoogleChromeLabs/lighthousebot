@@ -46,15 +46,19 @@ class LighthouseCI {
   }
 
   static testOnHeadlessChrome(testUrl) {
-    const builderUrl = 'https://builder-dot-lighthouse-ci.appspot.com/ci' +
-                       `?format=json&url=${testUrl}`;
-    return fetch(builderUrl)
-      .then(resp => resp.json())
-      .then(lhResults => {
-        return {score: this.getOverallScore(lhResults)};
-      }).catch(err => {
-        throw err;
-      });
+    // POST https://builder-dot-lighthouse-ci.appspot.com/ci
+    // '{"format": "json", "url": <testUrl>}"'
+    return fetch('https://builder-dot-lighthouse-ci.appspot.com/ci', {
+      method: 'POST',
+      body: JSON.stringify({format: 'json', url: testUrl}),
+      headers: {'Content-Type': 'application/json'}
+    })
+    .then(resp => resp.json())
+    .then(lhResults => {
+      return {score: this.getOverallScore(lhResults)};
+    }).catch(err => {
+      throw err;
+    });
   }
 
   /**
