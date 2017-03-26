@@ -3,11 +3,13 @@
   "version": "0.0.1",
   "description": "A Docker CI server for the Lighthouse",
   "author": "Cedric Bellet, Eric Bidelman <ebidel@>",
+  "license": "Apache-2.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "body-parser": "^1.17.1",
     "express": "^4.15.2"
   }
 }

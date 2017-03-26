@@ -27,6 +27,8 @@ sudo apt-get install -y google-chrome-stable
 COPY etc/xvfb /etc/init.d/xvfb
 RUN chmod +x /etc/init.d/xvfb
 
+RUN npm --global install yarn
+
 ## PART 2: Lighthouse
 ## ==================
 
@@ -34,17 +36,17 @@ RUN chmod +x /etc/init.d/xvfb
 # RUN git clone https://github.com/googlechrome/lighthouse &&\
 # cd /lighthouse &&\
 # git checkout tags/1.6.3 &&\
-# npm install &&\
-# npm run install-all &&\
-# npm run build-all
-RUN npm install -g lighthouse
+# yarn install &&\
+# yarn install-all &&\
+# yarn build-all
+RUN yarn global add lighthouse
 
 ## PART 3: Express server
 ## ======================
 
 # Install express
 COPY package.json /
-RUN npm install
+RUN yarn install
 
 # Add the simple server file
 COPY server.js /
