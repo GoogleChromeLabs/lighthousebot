@@ -1,8 +1,16 @@
 #!/bin/bash
 
 nohup google-chrome \
-  --headless \
   --no-first-run \
   --disable-gpu \
+  --no-first-run \
+  --disable-translate \
+  --disable-default-apps \
+  --disable-extensions \
+  --disable-background-networking \
+  --disable-sync \
+  --metrics-recording-only \
+  --safebrowsing-disable-auto-update \
+  --disable-setuid-sandbox \
   --user-data-dir=$TMP_PROFILE_DIR \
   --remote-debugging-port=9222 'about:blank' &

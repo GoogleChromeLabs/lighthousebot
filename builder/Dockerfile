@@ -12,7 +12,7 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 
 # Install Xvfb and dbus for X11
-# RUN apt-get install -y xvfb dbus-x11
+RUN apt-get install -y xvfb dbus-x11
 
 # Install Chrome for Ubuntu
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - &&\
@@ -24,27 +24,20 @@ sudo apt-get install -y google-chrome-stable
 # RUN apt-get install -y imagemagick
 
 # Copy key documents (except .dockerignored files)
-# COPY etc/xvfb /etc/init.d/xvfb
-# RUN chmod +x /etc/init.d/xvfb
-
-# Add a user and make it a sudo user
-RUN useradd -m chromeuser &&\
-sudo adduser chromeuser sudo
-
-# Copy the chrome-user script used to start Chrome as non-root
-COPY chromeuser-script.sh /
-RUN chmod +x /chromeuser-script.sh
+COPY etc/xvfb /etc/init.d/xvfb
+RUN chmod +x /etc/init.d/xvfb
 
 ## PART 2: Lighthouse
 ## ==================
 
 # Download lighthouse
-RUN git clone https://github.com/googlechrome/lighthouse &&\
-cd /lighthouse &&\
-git checkout tags/1.6.0 &&\
-npm install &&\
-npm run install-all &&\
-npm run build-all
+# RUN git clone https://github.com/googlechrome/lighthouse &&\
+# cd /lighthouse &&\
+# git checkout tags/1.6.3 &&\
+# npm install &&\
+# npm run install-all &&\
+# npm run build-all
+RUN npm install -g lighthouse
 
 ## PART 3: Express server
 ## ======================
@@ -62,6 +55,14 @@ EXPOSE 8080
 
 ## PART 4: Final setup
 ## ===================
+
+# Add a user and make it a sudo user
+RUN useradd -m chromeuser &&\
+sudo adduser chromeuser sudo
+
+# Copy the chrome-user script used to start Chrome as non-root
+COPY chromeuser-script.sh /
+RUN chmod +x /chromeuser-script.sh
 
 # Set the entrypoint
 COPY entrypoint.sh /

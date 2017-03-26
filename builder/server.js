@@ -9,10 +9,10 @@ const app = express();
 app.get('/ci', (req, res) => {
   const url = req.query.url;
   const format = req.query.format;
-  exec(`node lighthouse-cli --output-path=../report.${format}\
-       --output=${format} ${url}`, {cwd: '/lighthouse'});
-  res.sendFile(`/report.${format}`);
+  const file = `report.${format}`;
+  exec(`lighthouse --output-path=${file} --output=${format} ${url}`);
+  res.sendFile(`/${file}`);
 });
 
 app.listen(PORT);
-console.log('Running on http://localhost:' + PORT);
+console.log(`Running on http://localhost:${PORT}`);
