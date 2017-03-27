@@ -26,6 +26,11 @@ const URLSearchParams = require('url').URLSearchParams;
 const WPT_API_KEY = 'A.04c7244ba25a5d6d717b0343a821aa59';
 const WPT_PR_MAP = new Map();
 
+const GITHUB_PENDING_STATUS = {
+  state: 'pending',
+  description: 'Auditing PR changes...'
+};
+
 const github = new Github({debug: false, Promise: Promise});
 github.authenticate({type: 'oauth', token: process.env.OAUTH_TOKEN}); // lighthousebot creds
 
@@ -39,12 +44,6 @@ function handleError(err, prInfo) {
 
 class LighthouseCI {
 
-  static get DEFAULT_STATUS_OPTS() {
-    return {
-      context: 'Lighthouse'
-    };
-  }
-
   static testOnHeadlessChrome(testUrl) {
     // POST https://builder-dot-lighthouse-ci.appspot.com/ci
     // '{"format": "json", "url": <testUrl>}"'
@@ -54,9 +53,7 @@ class LighthouseCI {
       headers: {'Content-Type': 'application/json'}
     })
     .then(resp => resp.json())
-    .then(lhResults => {
-      return {score: this.getOverallScore(lhResults)};
-    }).catch(err => {
+    .catch(err => {
       throw err;
     });
   }
@@ -140,46 +137,12 @@ class LighthouseCI {
    * @return {!Promise<Object>} Status object from Github API.
    */
   static updateGithubStatus(opts={}) {
-    const statusObj = Object.assign({}, this.DEFAULT_STATUS_OPTS, opts);
+    const statusObj = Object.assign({context: 'Lighthouse'}, opts);
 
     return github.repos.createStatus(statusObj).then(status => {
       console.log(status.data.description);
       return status;
     });
-  }
-
-  /**
-   * Runs Lighthouse against the changes in a PR.
-   * @param {!{Object} config
-   * @return {!Promise<Object>}
-   */
-  static processPullRequest(config) {
-    const prInfo = {
-      repo: config.repo.name,
-      owner: config.repo.owner,
-      sha: config.pr.sha
-    };
-
-    return LighthouseCI.testOnWebpageTest(config.stagingUrl, config.pingbackUrl)
-      .then(json => {
-        if (!json.data || !json.data.testId) {
-          throw new Error('Lighthouse results were not found in WebPageTest results.');
-        }
-
-        const wptTestId = json.data.testId;
-
-        // stash wpt id -> github pr sha mapping.
-        WPT_PR_MAP.set(wptTestId, {prInfo, config});
-
-        return LighthouseCI.updateGithubStatus(Object.assign({
-          state: 'pending',
-          description: 'Auditing PR changes...',
-          target_url: json.data.userUrl
-        }, prInfo));
-      })
-      .catch(err => {
-        handleError(err, prInfo);
-      });
   }
 
   /**
@@ -217,7 +180,7 @@ app.get('/', (req, res) => {
   res.status(200).send('Nothing to see here');
 });
 
-// app.post('/github_hook', (req, res) => {
+// app.post('/github_webhook', (req, res) => {
 //   if (!('x-github-event' in req.headers)) {
 //     res.status(400).send('Not a request from Github.');
 //     return;
@@ -254,32 +217,81 @@ app.get('/wpt_ping', (req, res) => {
         throw new Error('Lighthouse results were not found in WebPageTest results.');
       }
 
-      const baseOpts = Object.assign({
+      const opts = Object.assign({
         target_url: `https://www.webpagetest.org/lighthouse.php?test=${wptTestId}`
       }, prInfo);
 
       const lhResults = json.data.lighthouse;
 
-      return LighthouseCI.assignPassFailToPR(lhResults, config, baseOpts).then(score => {
+      return LighthouseCI.assignPassFailToPR(lhResults, config, opts).then(score => {
         WPT_PR_MAP.delete(wptTestId); // Cleanup
         res.status(200).send({score});
       });
-    }).catch(err => {
+    })
+    .catch(err => {
       handleError(err, prInfo);
       res.json(err);
     });
 });
 
-app.post('/github_status', (req, res) => {
+app.post('/run_on_wpt', (req, res) => {
   const config = Object.assign({
     pingbackUrl: `${req.protocol}://${req.get('host')}/wpt_ping`
   }, req.body);
+  const testUrl = config.testUrl;
 
-  LighthouseCI.processPullRequest(config).then(result => {
-    res.status(200).send(result);
-  }).catch(() => {
-    res.status(404).send('Unable to process pull request.');
-  });
+  const prInfo = {
+    repo: config.repo.name,
+    owner: config.repo.owner,
+    sha: config.pr.sha
+  };
+
+  return LighthouseCI.testOnWebpageTest(testUrl, config.pingbackUrl)
+    .then(json => {
+      if (!json.data || !json.data.testId) {
+        throw new Error('Lighthouse results were not found in WebPageTest results.');
+      }
+
+      // stash wpt id -> github pr sha mapping.
+      WPT_PR_MAP.set(json.data.testId, {prInfo, config});
+
+      return LighthouseCI.updateGithubStatus(Object.assign({
+        target_url: json.data.userUrl
+      }, prInfo, GITHUB_PENDING_STATUS));
+    })
+    .then(result => {
+      res.status(200).send(result);
+    })
+    .catch(err => {
+      handleError(err, prInfo);
+      res.status(404).send('Unable to process pull request.');
+    });
+});
+
+app.post('/run_on_chrome', (req, res) => {
+  const config = Object.assign({}, req.body);
+  const testUrl = config.testUrl;
+
+  const prInfo = {
+    repo: config.repo.name,
+    owner: config.repo.owner,
+    sha: config.pr.sha
+  };
+
+  LighthouseCI.updateGithubStatus(Object.assign({}, prInfo, GITHUB_PENDING_STATUS))
+     // eslint-disable-next-line no-unused-vars
+    .then(status => LighthouseCI.testOnHeadlessChrome(testUrl))
+    .then(lhResults => {
+      const opts = Object.assign({target_url: testUrl}, prInfo);
+
+      return LighthouseCI.assignPassFailToPR(lhResults, config, opts).then(score => {
+        res.status(200).send({score});
+      });
+    })
+    .catch(err => {
+      handleError(err, prInfo);
+      res.json(err);
+    });
 });
 
 const PORT = process.env.PORT || 8080;
