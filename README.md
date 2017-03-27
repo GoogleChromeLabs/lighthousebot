@@ -3,22 +3,23 @@
 The Lighthouse CI is a web hook that can be setup to run against fresh PRs made
 to your site's Github repo.
 
-## How to integrate with your repo
+## Travis integration
 
-1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo.
-2. Add the webhook to repo: `https://lighthouse-ci.appspot.com/github_handler`
-    - Change the Content type dropwdown to "application/json".
-    - Select "Let me select individual events" and enable the "Pull request" and "Status" events.
-3. Add a `lighthouse.ci.json` file in the base of your repo.
+Lighthouse can be setup as part of your CI. To test the changes in new Github pull requests, do the following:
 
-### `lighthouse.ci.json`
+1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. This is so the Lighthouse CI can update the status of your pull requests.
+2. Update `travis.yaml` by adding an `after_success` section that contains the following:
 
-Definition:
+        after_success:
+          - export LH_MIN_PASS_SCORE=93
+          - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com
+          # deploy your app to the staging server
+          - ./travis/deploy_pr_gae.sh
 
-    {
-      "minPassScore": 85, // Minimum LH score for PR to pass as "success".
-      "stagingUrl": "<URL>" // Staging URL to test PR changes on.
-    }
+`LH_MIN_PASS_SCORE` - the minimum score for the PR to be considered passing.
+`LH_TEST_URL` - the URL of your staging server.
+
+As noted, it is up to you to deploy the PR changes to your staging environment.
 
 ## Development
 
