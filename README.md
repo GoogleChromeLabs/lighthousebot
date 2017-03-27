@@ -7,14 +7,15 @@ to your site's Github repo.
 
 Lighthouse can be setup as part of your CI. To test the changes in new Github pull requests, do the following:
 
-1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. This is so the Lighthouse CI can update the status of your pull requests.
+1. Add the github user [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. This gives Lighthouse CI access to update the status of your pull requests. **Note**: the OAuth token used by the Lighthouse CI is very limited in scope. It only has permission for the `repo:status` permission.
 2. Update `travis.yaml` by adding an `after_success` section that contains the following:
 
         after_success:
           - export LH_MIN_PASS_SCORE=93
-          - export LH_TEST_URL=https://lighthouse-ci-staging-dot-cr-status.appspot.com
+          - export LH_TEST_URL=https://staging.example.com
           # deploy your app to the staging server
-          - ./travis/deploy_pr_gae.sh
+          - ./deploy.sh
+          - node runLighthouse.js
 
 `LH_MIN_PASS_SCORE` - the minimum score for the PR to be considered passing.
 `LH_TEST_URL` - the URL of your staging server.
