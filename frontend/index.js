@@ -156,10 +156,10 @@ class LighthouseCI {
     const score = this.getOverallScore(lhResults);
     const passing = config.minPassScore <= score;
 
-    let description = `Failed. New Lighthouse score would be ${score}/100 ` +
+    let description = `Failed. This PR drops your Lighthouse score to ${score}/100 ` +
                       `(required ${config.minPassScore}+).`;
     if (passing) {
-      description = `Passed. New Lighthouse score would be ${score}/100.`;
+      description = `Passed. Lighthouse score will be ${score}/100.`;
     }
 
     const status = Object.assign({

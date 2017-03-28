@@ -11,11 +11,11 @@ Lighthouse can be setup as part of your CI. To test the changes in new Github pu
 2. Update `travis.yaml` by adding an `after_success` section that contains the following:
 
         after_success:
-          - export LH_MIN_PASS_SCORE=93
-          - export LH_TEST_URL=https://staging.example.com
-          # deploy your app to the staging server
+          # TODO: deploy app with the PR changes to your own staging server.
           - ./deploy.sh
-          - node runLighthouse.js
+          - export LH_MIN_PASS_SCORE=95
+          - export LH_TEST_URL=https://staging.example.com
+          - node runLighthouse.js $LH_TEST_URL $LH_MIN_PASS_SCORE
 
 `LH_MIN_PASS_SCORE` - the minimum score for the PR to be considered passing.
 `LH_TEST_URL` - the URL of your staging server.
