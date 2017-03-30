@@ -6,21 +6,29 @@ const bodyParser = require('body-parser');
 
 const PORT = 8080;
 
-function runLH(url, format = 'json') {
+function runLH(url, format = 'json', res) {
+  if (!url) {
+    res.status(400).send('Please provide a URL.');
+    return;
+  }
   const file = `report.${format}`;
-  exec(`lighthouse --output-path=${file} --output=${format} ${url}`);
-  return `/${file}`;
+  try {
+    exec(`lighthouse --output-path=${file} --output=${format} ${url}`);
+    res.sendFile(`/${file}`);
+  } catch (e) {
+    res.status(400).send(e);
+  }
 }
 
 const app = express();
 app.use(bodyParser.json());
 
 app.get('/ci', (req, res) => {
-  res.sendFile(runLH(req.query.url, req.query.format));
+  runLH(req.query.url, req.query.format, res);
 });
 
 app.post('/ci', (req, res) => {
-  res.sendFile(runLH(req.body.url, req.body.format));
+  runLH(req.query.url, req.query.format, res);
 });
 
 app.listen(PORT);

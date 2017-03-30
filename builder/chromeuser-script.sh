@@ -3,7 +3,6 @@
 nohup google-chrome \
   --no-first-run \
   --disable-gpu \
-  --no-first-run \
   --disable-translate \
   --disable-default-apps \
   --disable-extensions \
