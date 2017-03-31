@@ -278,6 +278,13 @@ app.post('/run_on_chrome', (req, res) => {
     sha: config.pr.sha
   };
 
+  if (!('x-api-key' in req.headers)) {
+    const msg = 'API_KEY was missing.';
+    handleError(new Error(msg), prInfo);
+    res.status(403).send(msg);
+    return;
+  }
+
   LighthouseCI.updateGithubStatus(Object.assign({}, prInfo, GITHUB_PENDING_STATUS))
      // eslint-disable-next-line no-unused-vars
     .then(status => LighthouseCI.testOnHeadlessChrome(testUrl))
