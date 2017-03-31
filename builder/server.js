@@ -21,8 +21,14 @@ function runLH(url, format = 'json', res, next) {
       res.status(500).send(err);
       return;
     }
+
     console.log(stdout);
-    res.sendFile(`/${file}`, {}, err => {
+
+    const opts = {
+      headers: {'Content-Type': 'application/json'}
+    };
+
+    res.sendFile(`/${file}`, opts, err => {
       if (err) {
         next(err);
       }
@@ -39,7 +45,7 @@ app.get('/ci', (req, res, next) => {
 });
 
 app.post('/ci', (req, res, next) => {
-  runLH(req.query.url, req.query.format, res, next);
+  runLH(req.body.url, req.body.format, res, next);
 });
 
 app.listen(PORT);

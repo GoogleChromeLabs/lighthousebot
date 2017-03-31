@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+MAINTAINER Eric Bidelman <ebidel@>
+
 ## PART 1: Core components
 ## =======================
 

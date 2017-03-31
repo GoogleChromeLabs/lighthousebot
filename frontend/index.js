@@ -44,12 +44,12 @@ function handleError(err, prInfo) {
 
 class LighthouseCI {
 
-  static testOnHeadlessChrome(testUrl) {
+  static testOnHeadlessChrome(body) {
     // POST https://builder-dot-lighthouse-ci.appspot.com/ci
     // '{"format": "json", "url": <testUrl>}"'
     return fetch('https://builder-dot-lighthouse-ci.appspot.com/ci', {
       method: 'POST',
-      body: JSON.stringify({format: 'json', url: testUrl}),
+      body: JSON.stringify(body),
       headers: {'Content-Type': 'application/json'}
     })
     .then(resp => resp.json())
@@ -279,15 +279,16 @@ app.post('/run_on_chrome', (req, res) => {
   };
 
   if (!('x-api-key' in req.headers)) {
+    const err = new Error(msg);
     const msg = 'API_KEY was missing.';
-    handleError(new Error(msg), prInfo);
-    res.status(403).send(msg);
+    handleError(err, prInfo);
+    res.status(403).json(err.message);
     return;
   }
 
   LighthouseCI.updateGithubStatus(Object.assign({}, prInfo, GITHUB_PENDING_STATUS))
      // eslint-disable-next-line no-unused-vars
-    .then(status => LighthouseCI.testOnHeadlessChrome(testUrl))
+    .then(status => LighthouseCI.testOnHeadlessChrome({format: config.format, url: testUrl}))
     .then(lhResults => {
       const opts = Object.assign({target_url: testUrl}, prInfo);
 
