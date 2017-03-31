@@ -1,34 +1,45 @@
 'use strict';
 
+const fs = require('fs');
 const express = require('express');
-const exec = require('child_process').execSync;
+const exec = require('child_process').exec;
 const bodyParser = require('body-parser');
 
 const PORT = 8080;
 
-function runLH(url, format = 'json', res) {
+function runLH(url, format = 'json', res, next) {
   if (!url) {
     res.status(400).send('Please provide a URL.');
     return;
   }
-  const file = `report.${format}`;
-  try {
-    exec(`lighthouse --output-path=${file} --output=${format} ${url}`);
-    res.sendFile(`/${file}`);
-  } catch (e) {
-    res.status(400).send(e);
-  }
+
+  const file = `report.${Date.now()}.${format}`;
+
+  exec(`lighthouse --output-path=${file} --output=${format} ${url}`, (err, stdout, stderr) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send(err);
+      return;
+    }
+    console.log(stdout);
+    res.sendFile(`/${file}`, {}, err => {
+      if (err) {
+        next(err);
+      }
+      fs.unlink(file);
+    });
+  });
 }
 
 const app = express();
 app.use(bodyParser.json());
 
-app.get('/ci', (req, res) => {
-  runLH(req.query.url, req.query.format, res);
+app.get('/ci', (req, res, next) => {
+  runLH(req.query.url, req.query.format, res, next);
 });
 
-app.post('/ci', (req, res) => {
-  runLH(req.query.url, req.query.format, res);
+app.post('/ci', (req, res, next) => {
+  runLH(req.query.url, req.query.format, res, next);
 });
 
 app.listen(PORT);
