@@ -24,11 +24,7 @@ function runLH(url, format = 'json', res, next) {
 
     console.log(stdout);
 
-    const opts = {
-      headers: {'Content-Type': 'application/json'}
-    };
-
-    res.sendFile(`/${file}`, opts, err => {
+    res.sendFile(`/${file}`, {}, err => {
       if (err) {
         next(err);
       }
