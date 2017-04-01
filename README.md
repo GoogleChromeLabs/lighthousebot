@@ -17,8 +17,8 @@ Lighthouse can be setup as part of your CI. To test the changes in new Github pu
           - export LH_TEST_URL=https://staging.example.com
           - node runLighthouse.js $LH_TEST_URL $LH_MIN_PASS_SCORE
 
-`LH_MIN_PASS_SCORE` - the minimum score for the PR to be considered passing.
-`LH_TEST_URL` - the URL of your staging server.
+- `LH_MIN_PASS_SCORE` - the minimum score for the PR to be considered passing.
+- `LH_TEST_URL` - the URL of your staging server.
 
 As noted, it is up to you to deploy the PR changes to your staging environment.
 
