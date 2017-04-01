@@ -71,8 +71,11 @@ class LighthouseCI {
     params.set('f', 'json');
     params.set('pingback', pingback); // The pingback is passed an "id" parameter of the test.
     // TODO: match emulation to LH settings. Nexus 5 doesn't work atm.
-    // params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3GFast');
-    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
+    // params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3G_EM');
+    // For native: Dulles_Linux:Chrome.Native
+    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3G_EM');
+    params.set('mobile', 1); // Emulate mobile (for desktop cases).
+    params.set('type', 'lighthouse'); // LH-only run.
     params.set('lighthouse', 1);
     params.set('url', testUrl);
 
@@ -200,6 +203,22 @@ app.get('/', (req, res) => {
 //   res.status(200).send('');
 // });
 
+// app.get('/test_wpt', (req, res) => {
+//   const pingbackUrl = 'https://14195295.ngrok.io/wpt_ping';
+//   const testUrl = 'https://www.chromestatus.com/features';
+
+//   return LighthouseCI.testOnWebpageTest(testUrl, pingbackUrl)
+//     .then(json => {
+//       // stash wpt id -> github pr sha mapping.
+//       WPT_PR_MAP.set(json.data.testId, {prInfo: {}, config: {}});
+
+//       res.status(200).send(json.data.userUrl);
+//     })
+//     .catch(err => {
+//       res.status(500).send(err.message);
+//     });
+// });
+
 app.get('/wpt_ping', (req, res) => {
   const wptTestId = req.query.id;
 
@@ -222,6 +241,8 @@ app.get('/wpt_ping', (req, res) => {
       }, prInfo);
 
       const lhResults = json.data.lighthouse;
+
+      console.log(lhResults);
 
       return LighthouseCI.assignPassFailToPR(lhResults, config, opts).then(score => {
         WPT_PR_MAP.delete(wptTestId); // Cleanup
@@ -264,7 +285,7 @@ app.post('/run_on_wpt', (req, res) => {
     })
     .catch(err => {
       handleError(err, prInfo);
-      res.status(404).send('Unable to process pull request.');
+      res.status(500).send(err.message);
     });
 });
 
