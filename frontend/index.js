@@ -233,6 +233,7 @@ app.get('/wpt_ping', (req, res) => {
     .then(resp => resp.json())
     .then(json => {
       if (!json.data || !json.data.lighthouse) {
+        console.log(json);
         throw new Error('Lighthouse results were not found in WebPageTest results.');
       }
 
@@ -241,8 +242,6 @@ app.get('/wpt_ping', (req, res) => {
       }, prInfo);
 
       const lhResults = json.data.lighthouse;
-
-      console.log(lhResults);
 
       return LighthouseCI.assignPassFailToPR(lhResults, config, opts).then(score => {
         WPT_PR_MAP.delete(wptTestId); // Cleanup
