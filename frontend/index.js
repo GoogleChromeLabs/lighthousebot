@@ -73,7 +73,7 @@ class LighthouseCI {
     // TODO: match emulation to LH settings. Nexus 5 doesn't work atm.
     // params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3G_EM');
     // For native: Dulles_Linux:Chrome.Native
-    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3G_EM');
+    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
     params.set('mobile', 1); // Emulate mobile (for desktop cases).
     params.set('type', 'lighthouse'); // LH-only run.
     params.set('lighthouse', 1);
