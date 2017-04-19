@@ -117,6 +117,7 @@ app.post('/run_on_chrome', (req, res) => {
     sha: config.pr.sha
   };
 
+  // Require an API key from users.
   if (!('x-api-key' in req.headers)) {
     const err = new Error(msg);
     const msg = 'API_KEY was missing.';

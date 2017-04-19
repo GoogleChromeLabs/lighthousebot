@@ -33,6 +33,8 @@ Run the dev server:
 
     yarn start
 
+This will start a web serve with by using the token in `.oauth_token`.
+
 ### Deploy
 
 Deploy the webhook (frontend):
@@ -45,7 +47,7 @@ Deploy the CI server (builder):
 
 #### Generate a new OAuth2 token
 
-If you need to generate a new
+If you need to generate a new OAuth token:
 
 1. Sign in to the `lighthousebot` Github account, and visible https://github.com/settings/tokens.
 2. Regenerate the token. **Important**: this invalidates the existing token.
