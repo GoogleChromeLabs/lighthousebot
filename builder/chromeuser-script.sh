@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Run full chrome
 nohup google-chrome \
   --no-first-run \
   --disable-gpu \
@@ -13,3 +14,8 @@ nohup google-chrome \
   --disable-setuid-sandbox \
   --user-data-dir=$TMP_PROFILE_DIR \
   --remote-debugging-port=9222 'about:blank' &
+
+# Run headless chrome
+# nohup google-chrome \
+#   --headless \
+#   --remote-debugging-port=9222 'about:blank' &

@@ -34,13 +34,17 @@ RUN npm --global install yarn
 ## PART 2: Lighthouse
 ## ==================
 
-# Download lighthouse
+# Download lighthouse from source.
 # RUN git clone https://github.com/googlechrome/lighthouse &&\
 # cd /lighthouse &&\
-# git checkout tags/1.6.3 &&\
+# git checkout tags/1.6.5 &&\
 # yarn install &&\
 # yarn install-all &&\
 # yarn build-all
+
+# Download lighthouse from npm.
+# cache bust so we always get the latest version of LH when building the image.
+ARG CACHEBUST=1
 RUN yarn global add lighthouse
 
 ## PART 3: Express server

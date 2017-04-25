@@ -5,6 +5,7 @@ const express = require('express');
 const exec = require('child_process').exec;
 const bodyParser = require('body-parser');
 
+const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
 function runLH(url, format = 'json', res, next) {
@@ -36,11 +37,19 @@ function runLH(url, format = 'json', res, next) {
 const app = express();
 app.use(bodyParser.json());
 
-app.get('/ci', (req, res, next) => {
-  runLH(req.query.url, req.query.format, res, next);
-});
+// app.get('/ci', (req, res, next) => {
+//   runLH(req.query.url, req.query.format, res, next);
+// });
 
 app.post('/ci', (req, res, next) => {
+  // Require an API key from users.
+  if (!req.get(API_KEY_HEADER)) {
+    const msg = `${API_KEY_HEADER} is missing`;
+    const err = new Error(msg);
+    res.status(403).json(err.message);
+    return;
+  }
+
   runLH(req.body.url, req.body.format, res, next);
 });
 

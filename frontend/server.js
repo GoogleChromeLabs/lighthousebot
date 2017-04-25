@@ -29,6 +29,7 @@ const GITHUB_PENDING_STATUS = {
 };
 
 const CI = new LighthouseCI(process.env.OAUTH_TOKEN);
+const API_KEY_HEADER = 'X-API-KEY';
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
@@ -118,9 +119,9 @@ app.post('/run_on_chrome', (req, res) => {
   };
 
   // Require an API key from users.
-  if (!('x-api-key' in req.headers)) {
+  if (!req.get(API_KEY_HEADER)) {
+    const msg = `${API_KEY_HEADER} is missing`;
     const err = new Error(msg);
-    const msg = 'API_KEY was missing.';
     CI.handleError(err, prInfo);
     res.status(403).json(err.message);
     return;
@@ -128,7 +129,9 @@ app.post('/run_on_chrome', (req, res) => {
 
   CI.updateGithubStatus(Object.assign({}, prInfo, GITHUB_PENDING_STATUS))
      // eslint-disable-next-line no-unused-vars
-    .then(status => CI.testOnHeadlessChrome({format: config.format, url: testUrl}))
+    .then(status => CI.testOnHeadlessChrome(
+        {format: config.format, url: testUrl},
+        {[API_KEY_HEADER]: req.get(API_KEY_HEADER)}))
     .then(lhResults => {
       const opts = Object.assign({target_url: testUrl}, prInfo);
 

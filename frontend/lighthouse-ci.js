@@ -38,13 +38,17 @@ class LighthouseCI {
     }, prInfo));
   }
 
-  testOnHeadlessChrome(body) {
+  testOnHeadlessChrome(body, headers) {
+    headers = Object.assign(headers, {
+      'Content-Type': 'application/json'
+    });
+
     // POST https://builder-dot-lighthouse-ci.appspot.com/ci
     // '{"format": "json", "url": <testUrl>}"'
     return fetch('https://builder-dot-lighthouse-ci.appspot.com/ci', {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: {'Content-Type': 'application/json'}
+      headers
     })
     .then(resp => resp.json())
     .catch(err => {
