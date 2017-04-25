@@ -29,7 +29,6 @@ elif [ $app == "frontend" ]
 then
   gcloud app deploy frontend/app.yaml \
       --project lighthouse-ci --version $deployVersion
-      #--account ericbidelman@google.com
 else
   echo $usage
   exit 0
