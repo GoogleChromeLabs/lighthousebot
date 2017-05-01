@@ -2,7 +2,9 @@
 
 This repo contains a reference server for running Lighthouse using Headless Chrome in Google App Engine Flexible Container. Use it to setup Lighthouse against fresh PRs made to your Github repo. #know_your_lighthouse_score
 
-## Travis integration
+**Note:** If you're interested in using Lighthouse CI, ping [@ebidel](https://github.com/ebidel).
+
+## Example - Travis integration 
 
 Lighthouse can be setup as part of your CI. To test the changes in new Github pull requests, do the following:
 
@@ -21,10 +23,30 @@ Lighthouse can be setup as part of your CI. To test the changes in new Github pu
 
 As noted, it is up to you to deploy the PR changes to your staging environment.
 
-### What's what
+### Staging server deployment and runLighthouse.js
 
-- [`builder/Docker`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) shows how to pull down Chrome, build a docker image from it, and [run Chrome, headlessly](https://github.com/ebidel/lighthouse-ci/blob/master/builder/chromeuser-script.sh).
-- Example deploy scripts (for App Engine) and a `runLighthouse.js` helper can be found in https://github.com/GoogleChrome/chromium-dashboard/tree/master/travis.
+It's preferable that your deploy the PR to a real staging server instead of running a local server on Travis. A staging environment will more accurately reflect your production setup. For example, Lighthouse performance numbers will be more realistic. 
+
+Example scripts that deploy a PR to a staging server can be found in [/GoogleChrome/chromium-dashboard/tree/master/travis](https://github.com/GoogleChrome/chromium-dashboard/tree/master/travis). It also contains an example `runLighthouse.js` that shows how to run the PR agains the [frontend Lighthouse CI example server](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js).
+
+References: 
+
+- `builder/` - App Engine Flexible VM Container to run Lighthouse using Headless Chrome. Contains a [`Docker`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) file and [scripts for running Chrome, headlessly](https://github.com/ebidel/lighthouse-ci/blob/master/builder/chromeuser-script.sh).
+- `frontend/` - [frontend CI server](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js)
+- An example `runLighthouse.js` helper can be found in https://github.com/GoogleChrome/chromium-dashboard/tree/master/travis. Also contains examples of how to install the App Engine SDK and deploy to a staging URL.
+
+### Running on WebPageTest instead of Headless Chrome
+
+In `runLighthouse.js`, changing the runner to `RUNNERS.wpt` will use the WebPageTest API to run Lighthouse. At the end of the run, the PR will link to a nice WebPageTest results link that includes a Lighthouse report.
+
+```javascript
+// Run LH if this is a PR.
+if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
+  run(RUNNERS.wpt);
+} else {
+  console.log('Lighthouse not run for non-PR commits');
+}
+```
 
 ## Development
 
