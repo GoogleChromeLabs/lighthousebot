@@ -2,7 +2,7 @@
 
 This repo contains a reference server for running Lighthouse using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome) in [Google App Engine Flexible](https://cloud.google.com/appengine/docs/flexible/nodejs/) Node container. Use it to setup Lighthouse against fresh PRs made to your Github repo. #know_your_lighthouse_score
 
-**Note:** If you're interested in using Lighthouse CI, ping [@ebidel](https://github.com/ebidel).
+**Note:** If you're interested in using Lighthouse CI out of the box, without running it yourself, ping [@ebidel](https://github.com/ebidel).
 
 ## Example - Travis integration 
 
