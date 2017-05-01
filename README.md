@@ -1,7 +1,6 @@
 # Lighthouse CI
 
-The Lighthouse CI is a web hook that can be setup to run against fresh PRs made
-to your site's Github repo.
+This repo contains a reference server for running Lighthouse using Headless Chrome in Google App Engine Flexible Container. Use it to setup Lighthouse against fresh PRs made to your Github repo. #know_your_lighthouse_score
 
 ## Travis integration
 
@@ -21,6 +20,11 @@ Lighthouse can be setup as part of your CI. To test the changes in new Github pu
 - `LH_TEST_URL` - the URL of your staging server.
 
 As noted, it is up to you to deploy the PR changes to your staging environment.
+
+### What's what
+
+- [`builder/Docker`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) shows how to pull down Chrome, build a docker image from it, and [run Chrome, headlessly](https://github.com/ebidel/lighthouse-ci/blob/master/builder/chromeuser-script.sh).
+- Example deploy scripts (for App Engine) and a `runLighthouse.js` helper can be found in https://github.com/GoogleChrome/chromium-dashboard/tree/master/travis.
 
 ## Development
 
