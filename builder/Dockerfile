@@ -2,8 +2,8 @@ FROM debian:sid
 
 LABEL name="lighthouse-ci" \
       maintainer="Eric Bidelman <ebidel@>" \
-			version="1.0" \
-			description="Lighthouse CI for testing all the perf things"
+      version="1.0" \
+      description="Lighthouse CI for testing all the perf things"
 
 ## PART 1: Define Core components
 ## =======================
@@ -37,14 +37,14 @@ ENV deps="apt-transport-https ca-certificates curl gnupg"
 RUN apt-get update && apt-get install -y $deps --no-install-recommends \
   && curl -sSL https://deb.nodesource.com/setup_6.x | bash - \
   && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-	&& echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-	&& apt-get update && apt-get install -y \
-		google-chrome-beta \
-  	nodejs \
-		--no-install-recommends \
+  && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+  && apt-get update && apt-get install -y \
+    google-chrome-beta \
+    nodejs \
+    --no-install-recommends \
   && npm --global install yarn \
-	&& apt-get purge --auto-remove -y curl gnupg \
-	&& rm -rf /var/lib/apt/lists/*
+  && apt-get purge --auto-remove -y curl gnupg \
+  && rm -rf /var/lib/apt/lists/*
 
 ## PART 3: Install Lighthouse
 ## ==========================
@@ -52,11 +52,11 @@ RUN apt-get update && apt-get install -y $deps --no-install-recommends \
 # Note: Uncomment the following lines if you want to download and build lighthouse from source
 # Remember to uncomment the "Install git" dependency in Part 1 or this step will fail 
 #RUN git clone https://github.com/googlechrome/lighthouse \
-#	&& cd /lighthouse \
-#	&& git checkout tags/1.6.5 \
-#	&& yarn install \
-#	&& yarn install-all \
-#	&& yarn build-all
+#  && cd /lighthouse \
+#	 && git checkout tags/1.6.5 \
+#	 && yarn install \
+#	 && yarn install-all \
+#	 && yarn build-all
 
 # Download lighthouse from npm.
 # cache bust so we always get the latest version of LH when building the image.
