@@ -39,7 +39,7 @@ RUN apt-get update && apt-get install -y $deps --no-install-recommends \
   && curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
   && apt-get update && apt-get install -y \
-    google-chrome-beta \
+    google-chrome-stable \
     nodejs \
     --no-install-recommends \
   && npm --global install yarn \
@@ -53,10 +53,10 @@ RUN apt-get update && apt-get install -y $deps --no-install-recommends \
 # Remember to uncomment the "Install git" dependency in Part 1 or this step will fail 
 #RUN git clone https://github.com/googlechrome/lighthouse \
 #  && cd /lighthouse \
-#	 && git checkout tags/1.6.5 \
-#	 && yarn install \
-#	 && yarn install-all \
-#	 && yarn build-all
+#  && git checkout tags/1.6.5 \
+#  && yarn install \
+#  && yarn install-all \
+#  && yarn build-all
 
 # Download lighthouse from npm.
 # cache bust so we always get the latest version of LH when building the image.
@@ -77,7 +77,7 @@ RUN yarn install
 
 # Add Chrome as a user
 RUN groupadd -r lighthouseci && useradd -r -g lighthouseci -G audio,video lighthouseci \
-    && mkdir -p /home/lighthouseci && chown -R lighthouseci:lighthouseci /home/lighthouseci
+  && mkdir -p /home/lighthouseci && chown -R lighthouseci:lighthouseci /home/lighthouseci
 
 # Run as our recently created non-privileged user
 USER lighthouseci

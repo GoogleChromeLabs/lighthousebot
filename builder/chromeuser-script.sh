@@ -16,7 +16,7 @@
 #   --remote-debugging-port=9222 'about:blank' &
 
 # Run headless chrome.
-nohup google-chrome-beta \
+nohup google-chrome-stable \
   --headless \
   --disable-gpu \
   --remote-debugging-port=9222 'about:blank' &
