@@ -34,6 +34,9 @@ const API_KEY_HEADER = 'X-API-KEY';
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(express.static('public', {
+  extensions: ['html', 'htm'],
+}));
 
 app.get('/', (req, res) => {
   res.status(200).send('Nothing to see here');
@@ -118,14 +121,14 @@ app.post('/run_on_chrome', (req, res) => {
     sha: config.pr.sha
   };
 
-  // Require an API key from users.
-  if (!req.get(API_KEY_HEADER)) {
-    const msg = `${API_KEY_HEADER} is missing`;
-    const err = new Error(msg);
-    CI.handleError(err, prInfo);
-    res.status(403).json(err.message);
-    return;
-  }
+  // // Require an API key from users.
+  // if (!req.get(API_KEY_HEADER)) {
+  //   const msg = `${API_KEY_HEADER} is missing`;
+  //   const err = new Error(msg);
+  //   CI.handleError(err, prInfo);
+  //   res.status(403).json(err.message);
+  //   return;
+  // }
 
   CI.updateGithubStatus(Object.assign({}, prInfo, GITHUB_PENDING_STATUS))
      // eslint-disable-next-line no-unused-vars

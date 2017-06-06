@@ -1,8 +1,7 @@
 {
   "name": "lighthouse_ci",
-  "version": "0.0.1",
   "description": "A Docker CI server for the Lighthouse",
-  "author": "Cedric Bellet, Eric Bidelman <ebidel@>",
+  "author": "Eric Bidelman <ebidel@>, Cedric Bellet",
   "license": "Apache-2.0",
   "main": "server.js",
   "scripts": {

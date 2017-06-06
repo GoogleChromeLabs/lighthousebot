@@ -1,0 +1,342 @@
+:root {
+  --grey: #aaa;
+  --color-poor: #e53935;
+  --color-average: #ef6c00;
+  --color-good: #43a047;
+}
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100vh;
+  margin: 0;
+}
+.hidden {
+  display: none !important;
+}
+body {
+  line-height: 1.6;
+  font-family: 'Product Sans', Arial, sans-serif;
+  font-weight: 300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: #fafafa;
+  -webkit-font-smoothing: antialiased;
+}
+main {
+  display: flex;
+  flex-direction: column;
+}
+#background {
+  transition: opacity 300ms ease-in-out;
+  z-index: -2;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+}
+body.good #background {
+  opacity: 1;
+  box-shadow: 0px 0px 100px var(--color-good) inset;
+}
+body.average #background {
+  opacity: 1;
+  box-shadow: 0px 0px 100px var(--color-average) inset;
+}
+body.poor #background {
+  opacity: 1;
+  box-shadow: 0px 0px 100px var(--color-poor) inset;
+}
+body.running .logo-nolight {
+  animation-name: blink;
+}
+body.done #lighthouse-report {
+  pointer-events: initial;
+  transform: translateY(250%);
+  opacity: 1;
+}
+h1, h2, h3 {
+  font-weight: inherit;
+}
+a {
+  text-decoration: none;
+  color: currentColor;
+}
+main {
+  width: 50vw;
+}
+footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  text-align: center;
+  color: var(--grey);
+  transition: opacity 300ms ease-in-out;
+}
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-top: -250px;
+  margin-bottom: -30px;
+  margin-left: -16px;
+  flex-shrink: 0;
+  background: radial-gradient(ellipse at 50% 50%, #fafafa 25%, transparent);
+  position: relative;
+}
+.logo-section h1 {
+  display: none;
+}
+.logo {
+  cursor: pointer;
+  top: 0;
+}
+#url {
+  --shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
+  --hover-shadow: 0 3px 8px 0 rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.08);
+  border: none;
+  height: var(--url-section-height);
+  width: 100%;
+  outline: none;
+  border-radius: var(--url-section-border-radius);
+  box-shadow: var(--shadow);
+  transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  padding: 0 16px;
+  padding-right: calc(8px * 12);
+  font: inherit;
+  z-index: 1;
+}
+#url:hover {
+  box-shadow: var(--hover-shadow);
+}
+#url:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset, var(--shadow);
+}
+#url:hover:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset, var(--hover-shadow);
+}
+#url::-moz-input-placeholder {
+  color: var(--grey);
+}
+#url::-webkit-input-placeholder {
+  color: var(--grey);
+}
+.logo {
+  height: 300px;
+}
+.logo-nolight {
+  position: absolute;
+  opacity: 0;
+  animation-duration: 2.5s;
+  animation-direction: alternate;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+#logger {
+  width: 100%;
+  border: none;
+  background: transparent;
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  bottom: 30px;
+  padding: 0 50px 50px 50px;
+  margin-top: 40px;
+  color: #bbb;
+  resize: none;
+  font-size: 14px;
+}
+.url-section {
+  --url-section-height: 50px;
+  --url-section-border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.search-arrow {
+  background: linear-gradient(to bottom, transparent 60%, #eee);
+  border-left: 1px solid #ddd;
+  cursor: pointer;
+  color: #555;
+  border-bottom-left-radius: var(--url-section-border-radius);
+  border-bottom-right-radius: var(--url-section-border-radius);
+  font-size: 30px;
+  height: var(--url-section-height);
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  padding: 8px;
+  z-index: 2;
+}
+.search-arrow:hover {
+  box-shadow: -3px 0px 3px #eee;
+}
+#lighthouse-score {
+  font-size: 24px;
+  position: absolute;
+  right: calc(8px * 4);
+  display: flex;
+  align-items: center;
+  align-self: flex-end;
+  padding: 8px;
+  z-index: 1;
+  pointer-events: none;
+}
+#lighthouse-score.good {
+  color: var(--color-good);
+}
+#lighthouse-score.average {
+  color: var(--color-average);
+}
+#lighthouse-score.poor {
+  color: var(--color-poor);
+}
+#lighthouse-report {
+  transition: all 400ms cubic-bezier(0.18, 0.89, 0.32, 1.28) 500ms;
+  position: absolute;
+  display: flex;
+  align-self: center;
+  pointer-events: none;
+  width: 270px;
+  opacity: 0;
+  display: flex;
+  justify-content: space-between;
+}
+#lighthouse-report .button {
+  padding: 8px 16px;
+  background: rgb(50,109,255);
+  color: #fff;
+  border-radius: 4px;
+}
+#lighthouse-report .button:hover {
+  font-weight: 600;
+}
+.useheadless-setting {
+  align-self: flex-end;
+  margin-top: 12px;
+  color: var(--grey);
+}
+.useheadless-setting label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding-right: 4px;
+}
+.useheadless-setting label:hover {
+  color: #777;
+}
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border: 1px solid var(--grey);
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  margin-right: 6px;
+  background: #fafafa;
+}
+input[type="checkbox"]:checked {
+  background-color: var(--color-good);
+  border-color: darkgreen;
+}
+input[type="checkbox"]:not(:checked):hover {
+  border: 1px solid #777;
+}
+input[type="checkbox"]:before {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  line-height: 0;
+}
+input[type="checkbox"]:checked:before {
+  content: '✔';
+}
+/*input[type="checkbox"]:hover:before {
+  background: darkgreen;
+}*/
+
+html.kiosk {
+  pointer-events: none;
+}
+.kiosk #lighthouse-score {
+  top: 100px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  text-align: center;
+  display: block;
+  font-size: 100px;
+}
+.kiosk #lighthouse-report,
+.kiosk .useheadless-setting,
+.kiosk .search-arrow {
+  display: none;
+}
+.kiosk .logo-section h1 {
+  font-size: 80px;
+  color: rgb(23,27,162);
+  display: block;
+  margin: -140px -26px 100px 0;
+  text-transform: uppercase;
+}
+.kiosk .logo-section {
+  flex-direction: column;
+  align-items: center;
+  margin-top: -500px;
+  margin-bottom: -60px;
+  margin-left: -25px;
+}
+.kiosk .logo {
+  height: 600px;
+  width: 600px;
+}
+.kiosk .url-section {
+  font-size: 35px;
+  background: radial-gradient(ellipse at 50% 50%, #fafafa 25%, transparent);
+}
+.kiosk .url-section::before {
+  content: 'Testing...';
+  color: var(--grey);
+  display: flex;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 400ms ease-in-out;
+  font-size: 24px;
+}
+.kiosk .running .url-section::before {
+  opacity: 1;
+}
+.kiosk #url {
+  background: none;
+  text-align: center;
+  padding: 0;
+  box-shadow: none;
+}
+.kiosk #logger {
+  font-size: 20px;
+}

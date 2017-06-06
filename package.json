@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-ci",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lighthouse CI",
   "main": "index.js",
   "scripts": {},
@@ -15,7 +15,7 @@
   },
   "homepage": "https://github.com/ebidel/lighthouse-ci#readme",
   "dependencies": {
-    "eslint": "^3.17.1",
-    "eslint-config-google": "^0.7.1"
+    "eslint": "^3.18.0",
+    "eslint-config-google": "^0.8.0"
   }
 }

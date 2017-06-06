@@ -13,6 +13,9 @@ apt-get install -y sudo curl wget unzip git
 RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - &&\
 sudo apt-get install -y nodejs
 
+# Install Xvfb and dbus for X11
+RUN apt-get install -y xvfb dbus-x11
+
 # Install Chrome for Ubuntu
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - &&\
 sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' &&\
@@ -21,6 +24,10 @@ sudo apt-get install -y google-chrome-unstable
 
 # Install imagemagick for tests [optional]
 # RUN apt-get install -y imagemagick
+
+# Copy key documents (except .dockerignored files)
+COPY etc/xvfb /etc/init.d/xvfb
+RUN chmod +x /etc/init.d/xvfb
 
 RUN npm --global install yarn
 
@@ -62,12 +69,12 @@ RUN useradd -m chromeuser &&\
 sudo adduser chromeuser sudo
 
 # Copy the chrome-user script used to start Chrome as non-root
-COPY chromeuser-script.sh /
-RUN chmod +x /chromeuser-script.sh
+COPY chromeuser-script_nonheadless.sh /
+RUN chmod +x /chromeuser-script_nonheadless.sh
 
 # Set the entrypoint
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint_nonheadless.sh /
+RUN chmod +x /entrypoint_nonheadless.sh
+ENTRYPOINT ["/entrypoint_nonheadless.sh"]
 
 # CMD ["/bin/bash"]
