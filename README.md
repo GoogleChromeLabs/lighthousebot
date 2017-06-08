@@ -4,9 +4,12 @@ This repo contains the frontend and backend for the Lighthouse CI server.
 
 ## Testing a Github PR
 
-It's easy to setup Lighthouse as part of your CI on Travis. As new pull requests come in, the Lighthouse CI can test the changes and report back the new score.
+<img width="400" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
 
-To setup Lighthouse for your pull requests, do the following:
+Lighthouse can be setup as part of your CI on Travis. As new pull requests come in, the **Lighthouse CI tests the changes and reports back the new score**.
+
+To audit pull requests, do the following:
+
 1. Add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo.
     This is so the Lighthouse CI can update the status of your PRs. Don't worry. It's OAuth token is very limited in scope and only has permission for `repo:status`.
 2. Add an `after_success` section to `travis.yaml`:
@@ -21,6 +24,8 @@ To setup Lighthouse for your pull requests, do the following:
     | ------------- | ------------- |
     | `LH_MIN_PASS_SCORE`  | Specifies the minimum Lighthouse score     for the PR to be considered "passing".  |
     | `LH_TEST_URL`  | Specifies the URL of your staging server.  |
+
+<img width="400" src="https://user-images.githubusercontent.com/238208/26909921-c3a72032-4bb8-11e7-885b-0119fbc1c183.png">
 
 ### Explanation
 
