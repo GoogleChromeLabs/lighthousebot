@@ -22,7 +22,7 @@ To audit pull requests, do the following:
 
     | ENV variable  | Description |
     | ------------- | ------------- |
-    | `LH_MIN_PASS_SCORE`  | Specifies the minimum Lighthouse score     for the PR to be considered "passing".  |
+    | `LH_MIN_PASS_SCORE`  | Specifies the minimum Lighthouse score for the PR to be considered "passing".  |
     | `LH_TEST_URL`  | Specifies the URL of your staging server.  |
 
 <img width="400" src="https://user-images.githubusercontent.com/238208/26909921-c3a72032-4bb8-11e7-885b-0119fbc1c183.png">
@@ -62,6 +62,7 @@ Handlers:
 
 **Example** - raw endpoint usage
 Note: this is what `runLighthouse.js` does for you.
+
 ```
 POST https://lighthouse-ci.appspot.com/run_on_chrome
 Content-Type: application/json
@@ -81,6 +82,7 @@ Content-Type: application/json
 ```
 
 Relevant source:
+
 - [`frontend/server.js`](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR. Contains endpoints for running Lighthouse directly on Chrome (`/run_on_chrome`) or using the WebPageTest integration (`/run_on_wpt`).
 
 ##### Running on WebPageTest instead of Chrome
@@ -97,6 +99,7 @@ if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
   console.log('Lighthouse is not run for non-PR commits');
 }
 ```
+
 At the end of testing, your PR will be updated with a link to the WebPageTest results containing the Lighthouse report!
 
 #### CI builder
@@ -108,12 +111,14 @@ Handlers:
 Contains example Dockerfiles for running Lighthouse using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome) and full Chrome. Both setups us [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node).
 
 Relevant source:
+
 - [`builder/Dockerfile.nonheadless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.nonheadless) - Dockerfile for running full Chrome.
 - [`builder/Dockerfile.headless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.headless) - Dockerfile for running headless Chrome.
 - `builder/server.js` - The `/ci` endpoint that runs Lighthouse.
 
 **Example** - raw usage of endpoint
 Note: this is what `runLighthouse.js` does for you.
+
 ```sh
 curl -X POST \
   -H "Content-Type: application/json" \
@@ -124,6 +129,7 @@ curl -X POST \
 ## Development
 
 Initial setup:
+
 1. Ask an existing dev for the oauth2 token. If you need to regenerate one, see below.
 - Create `frontend/.oauth_token` and copy in the token value.
 
@@ -131,12 +137,13 @@ Run the dev server:
 
     yarn start
 
-This will start a web serve and use the token in `.oauth_token`. The token is used to update PR status in Github.
+This will start a web server and use the token in `.oauth_token`. The token is used to update PR status in Github.
 
 Follow the steps in [Testing a Github PR](#testing-a-github-pr) for setting up
 your repo.
 
 Notes:
+
 - If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).
 - To make changes to the CI server, you'll probably want to run [ngrok](https://ngrok.com/) so you can test against a local server instead of deploying for each change.
 
