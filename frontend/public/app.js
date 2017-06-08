@@ -121,7 +121,7 @@ function runLighthouse(url = '') {
 
       let url = e.data.split(' ')[1];
       if (url.includes('localhost')) {
-        url = url.replace('http://localhost', ENDPOINT_ORIGIN);
+        url = url.replace('https://localhost', ENDPOINT_ORIGIN);
       }
       finalizeRun(url);
       return;

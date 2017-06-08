@@ -63,15 +63,15 @@ function runLighthouseAsEventStream(req, res, next) {
 
   child.stderr.on('data', data => {
     const str = data.toString();
-    console.log(str);
     res.write(`data: ${str}\n\n`);
     log += str;
   });
 
   child.on('close', statusCode => {
-    const serverOrigin = `${req.protocol}://${req.host}/`;
+    const serverOrigin = `https://${req.host}/`;
     res.write(`data: done ${serverOrigin + file}\n\n`);
     res.status(410).end();
+    console.log(log);
     log = '';
   });
 }
