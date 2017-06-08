@@ -52,8 +52,8 @@ Relevant source:
 > Server that responds to requests from Travis.
 
 Handlers:
-`https://lighthouse-ci.appspot.com/run_on_chrome`
-`https://lighthouse-ci.appspot.com/run_on_wpt`
+- `https://lighthouse-ci.appspot.com/run_on_chrome`
+- `https://lighthouse-ci.appspot.com/run_on_wpt`
 
 **Example** - raw endpoint usage
 Note: this is what `runLighthouse.js` does for you.
@@ -76,7 +76,7 @@ Content-Type: application/json
 ```
 
 Relevant source:
-[`frontend/server.js`](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR. Contains endpoints for running Lighthouse directly on Chrome (`/run_on_chrome`) or using the WebPageTest integration (`/run_on_wpt`).
+- [`frontend/server.js`](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR. Contains endpoints for running Lighthouse directly on Chrome (`/run_on_chrome`) or using the WebPageTest integration (`/run_on_wpt`).
 
 ##### Running on WebPageTest instead of Chrome
 
@@ -98,14 +98,14 @@ At the end of testing, your PR will be updated with a link to the WebPageTest re
 > Server that runs Lighthouse against a URL, using Chrome.
 
 Handlers:
-`https://lighthouse-ci.appspot.com/ci`
+- `https://lighthouse-ci.appspot.com/ci`
 
 Contains example Dockerfiles for running Lighthouse using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome) and full Chrome. Both setups us [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node).
 
 Relevant source:
-[`builder/Dockerfile.nonheadless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.nonheadless) - Dockerfile for running full Chrome.
-[`builder/Dockerfile.headless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.headless) - Dockerfile for running headless Chrome.
-`builder/server.js` - The `/ci` endpoint that runs Lighthouse.
+- [`builder/Dockerfile.nonheadless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.nonheadless) - Dockerfile for running full Chrome.
+- [`builder/Dockerfile.headless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.headless) - Dockerfile for running headless Chrome.
+- `builder/server.js` - The `/ci` endpoint that runs Lighthouse.
 
 **Example** - raw usage of endpoint
 Note: this is what `runLighthouse.js` does for you.
