@@ -94,11 +94,7 @@ class LighthouseCI {
    * @return {!number}
    */
   static getOverallScore(lhResults) {
-    const scoredAggregations = lhResults.aggregations.filter(a => a.scored);
-    const total = scoredAggregations.reduce((sum, aggregation) => {
-      return sum + aggregation.total;
-    }, 0);
-    return Math.round((total / scoredAggregations.length) * 100);
+    return lhResults.score;
   }
 
   /**
