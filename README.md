@@ -16,7 +16,7 @@ To audit pull requests, do the following:
 
         after_success:
           - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-          - export LH_MIN_PASS_SCORE=95
+          - export LH_MIN_PASS_SCORE=96
           - export LH_TEST_URL=https://staging.example.com
           - node runLighthouse.js $LH_TEST_URL $LH_MIN_PASS_SCORE
 
@@ -41,7 +41,7 @@ Yes, but we recommend that you deploy the PR to a real staging server instead of
 
 The last step in `after_success` is to call [`runLighthouse.js`](https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/runLighthouse.js). Copy this file  to your repo. When you call it in `travis.yml`, pass the minimum Lighthouse score you expect and a URL to test:
 
-    node runLighthouse.js 95 https://staging.example.com
+    node runLighthouse.js 96 https://staging.example.com
 
 ## Source  details
 
@@ -68,7 +68,7 @@ Content-Type: application/json
 
 {
   testUrl: "https://staging.example.com",
-  minPassScore: 95,
+  minPassScore: 96,
   repo: {
     owner: "<REPO_OWNER>",
     name: "<REPO_NAME>"
