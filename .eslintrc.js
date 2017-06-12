@@ -6,6 +6,14 @@ module.exports = {
     "node": true,
     "es6": true
   },
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "ecmaFeatures": {
+      "jsx": false,
+      "experimentalObjectRestSpread": false
+    },
+    "sourceType": "script"
+  },
   "rules": {
     // 2 == error, 1 == warning, 0 == off
     "indent": [2, 2, {
@@ -45,14 +53,5 @@ module.exports = {
     "comma-dangle": 0,
     "arrow-parens": 0,
     "no-console": 0
-  },
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "globalReturn": true,
-      "jsx": false,
-      "experimentalObjectRestSpread": false
-    },
-    "sourceType": "script"
   }
 }

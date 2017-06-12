@@ -144,13 +144,12 @@ class LighthouseCI {
    * @return {!Promise<number>} Lighthouse score.
    */
   postLighthouseComment(prInfo, lhResults) {
-
     let rows = '';
     lhResults.reportCategories.forEach(cat => {
       rows += `| ${cat.name} | ${Math.round(cat.score)} |\n`;
     });
 
-    let body = `
+    const body = `
 Updated [Lighthouse](https://developers.google.com/web/tools/lighthouse/) report for the changes in this PR:
 
 | Category  | Score |
@@ -161,6 +160,7 @@ _Tested with Lighthouse version: ${lhResults.lighthouseVersion}_`;
 
     const score = LighthouseCI.getOverallScore(lhResults);
 
+    // eslint-disable-next-line no-unused-vars
     return this.github.issues.createComment(Object.assign({body}, prInfo)).then(status => score);
   }
 }
