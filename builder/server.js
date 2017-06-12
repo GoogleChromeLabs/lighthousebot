@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
+// Handler for CI.
 function runLH(url, format = 'domhtml', res, next) {
   if (!url) {
     res.status(400).send('Please provide a URL.');
@@ -34,6 +35,7 @@ function runLH(url, format = 'domhtml', res, next) {
   });
 }
 
+// Serve sent event handler for https://lighthouse-ci.appspot.com/try.
 function runLighthouseAsEventStream(req, res, next) {
   const url = req.query.url;
   const format = req.query.format || 'domhtml';

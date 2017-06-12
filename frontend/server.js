@@ -39,7 +39,8 @@ app.use(express.static('public', {
 }));
 
 app.get('/', (req, res) => {
-  res.status(200).send('Nothing to see here');
+  res.status(200).send(
+      'See https://github.com/ebidel/lighthouse-ci for documentation.');
 });
 
 app.get('/wpt_ping', (req, res) => {
@@ -57,7 +58,8 @@ app.get('/wpt_ping', (req, res) => {
     .then(json => {
       if (!json.data || !json.data.lighthouse) {
         console.log(json);
-        throw new Error('Lighthouse results were not found in WebPageTest results.');
+        throw new Error(
+            'Lighthouse results were not found in WebPageTest results.');
       }
 
       const opts = Object.assign({
@@ -92,7 +94,8 @@ app.post('/run_on_wpt', (req, res) => {
   return CI.startOnWebpageTest(WPT_API_KEY, testUrl, config.pingbackUrl)
     .then(json => {
       if (!json.data || !json.data.testId) {
-        throw new Error('Lighthouse results were not found in WebPageTest results.');
+        throw new Error(
+            'Lighthouse results were not found in WebPageTest results.');
       }
 
       // stash wpt id -> github pr sha mapping.
@@ -148,24 +151,104 @@ app.post('/run_on_chrome', (req, res) => {
     });
 });
 
-// app.post('/github_webhook', (req, res) => {
+// app.post('/github_webhook', async (req, res) => {
 //   if (!('x-github-event' in req.headers)) {
 //     res.status(400).send('Not a request from Github.');
 //     return;
 //   }
 
-//   if (req.headers['x-github-event'] === 'pull_request') {
-//     if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
-//       CI.fetchCIFile(req)
-//         .then(config => CI.processPullRequest(req, config))
-//         .then(result => {
-//           res.status(200).send(result);
-//         });
-//       return;
-//     }
+//   // Ignore non-pull request events.
+//   if (req.headers['x-github-event'] !== 'pull_request') {
+//     res.status(200).send('Not a pull request event.');
+//     return;
 //   }
-//   res.status(200).send('');
+
+//   if (['opened', 'reopened', 'synchronize'].includes(req.body.action)) {
+//     const prInfo = {
+//       owner: req.body.repository.full_name.split('/')[0],
+//       repo: req.body.repository.full_name.split('/')[1],
+//       number: req.body.number,
+//       sha: req.body.pull_request.head.sha
+//     }
+
+//     try {
+//       const status = Object.assign({}, prInfo, GITHUB_PENDING_STATUS);
+//       const result = await CI.updateGithubStatus(status);
+//     } catch (err) {
+//       CI.handleError(err, prInfo);
+//     }
+
+//     const headers = {[API_KEY_HEADER]: req.get(API_KEY_HEADER)};
+//     const lhResults = await CI.testOnHeadlessChrome({
+//       format: 'json',
+//       url: 'https://www.chromestatus.com/features'
+//     }, headers);
+
+//     try {
+//       await CI.postLighthouseComment(prInfo, lhResults);
+//       res.status(200).send('Lighthouse comment posted to PR.');
+//     } catch (err) {
+//       res.json('Error posting Lighthouse comment to PR.');
+//     }
+
+//     try {
+//       const result = await CI.updateGithubStatus(Object.assign({
+//         description: 'Auditing complete. See scores above.',
+//         state: 'success'
+//       }, prInfo));
+//     } catch (err) {
+//       CI.handleError(err, prInfo);
+//     }
+//   } else {
+//     res.status(200).send('');
+//   }
 // });
+
+app.post('/add_github_comment', async (req, res) => {
+  const config = Object.assign({}, req.body);
+
+  const prInfo = {
+    repo: config.repo.name,
+    owner: config.repo.owner,
+    number: config.pr.number,
+    sha: config.pr.sha
+  };
+
+  // GH status update: inform user LH has started auditing.
+  try {
+    const status = Object.assign({}, prInfo, GITHUB_PENDING_STATUS);
+    const result = await CI.updateGithubStatus(status);
+  } catch (err) {
+    CI.handleError(err, prInfo);
+  }
+
+  // Run Lighthouse CI against PR changes.
+  const headers = {[API_KEY_HEADER]: req.get(API_KEY_HEADER)};
+  const lhResults = await CI.testOnHeadlessChrome({
+    format: 'json',
+    url: config.testUrl
+  }, headers);
+
+  // GH status update: inform user LH is done!
+  try {
+    const result = await CI.updateGithubStatus(Object.assign({
+      description: 'Auditing complete. See scores above.',
+      state: 'success'
+    }, prInfo));
+  } catch (err) {
+    CI.handleError(err, prInfo);
+  }
+
+  // Post comment on issue with updated LH scores.
+  try {
+    const score = await CI.postLighthouseComment(prInfo, lhResults);
+    res.status(200).send({score});
+  } catch (err) {
+    res.json('Error posting Lighthouse comment to PR.');
+  }
+
+  res.status(200).send({score: lhResults.score});
+});
 
 // app.get('/test_wpt', (req, res) => {
 //   const pingbackUrl = 'https://14195295.ngrok.io/wpt_ping';

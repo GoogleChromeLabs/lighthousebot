@@ -116,7 +116,7 @@ class LighthouseCI {
    * @param {!Object} lhResults Lighthouse results object.
    * @param {!{minPassScore: number}} config
    * @param {!Object} opts Options to set the status with.
-   * @return {!Promise<Object>} Status object from Github API.
+   * @return {!Promise<number>} Lighthouse score.
    */
   assignPassFailToPR(lhResults, config, opts) {
     const score = LighthouseCI.getOverallScore(lhResults);
@@ -135,6 +135,33 @@ class LighthouseCI {
 
     // eslint-disable-next-line no-unused-vars
     return this.updateGithubStatus(status).then(status => score);
+  }
+
+  /**
+   * Posts a comment to the PR with the latest Lighthouse scores.
+   * @param {!{owner: string, repo: string, number: number}} prInfo
+   * @param {!Object} lhResults Lighthouse results object.
+   * @return {!Promise<number>} Lighthouse score.
+   */
+  postLighthouseComment(prInfo, lhResults) {
+
+    let rows = '';
+    lhResults.reportCategories.forEach(cat => {
+      rows += `| ${cat.name} | ${Math.round(cat.score)} |\n`;
+    });
+
+    let body = `
+Updated [Lighthouse](https://developers.google.com/web/tools/lighthouse/) report for the changes in this PR:
+
+| Category  | Score |
+| ------------- | ------------- |
+${rows}
+
+_Tested with Lighthouse version: ${lhResults.lighthouseVersion}_`;
+
+    const score = LighthouseCI.getOverallScore(lhResults);
+
+    return this.github.issues.createComment(Object.assign({body}, prInfo)).then(status => score);
   }
 }
 
