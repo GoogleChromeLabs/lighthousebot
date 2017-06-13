@@ -39,7 +39,7 @@ app.use(express.static('public', {
 }));
 
 app.get('/', (req, res) => {
-  res.redirect(require('../package.json').homepage);
+  res.redirect('https://github.com/GoogleChrome/lighthouse#readme');
 });
 
 // Handler pingback result from webpagetest.
