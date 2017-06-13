@@ -69,7 +69,7 @@ class LighthouseCI {
     params.set('k', apiKey);
     params.set('f', 'json');
     params.set('pingback', pingback); // The pingback is passed an "id" parameter of the test.
-    // TODO: match emulation to LH settings. Nexus 5 doesn't work atm.
+    // TODO: match emulation to LH settings.
     params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3G_EM');
     // For native: Dulles_Linux:Chrome.Native
     // params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
