@@ -14,30 +14,32 @@ To audit pull requests, do the following:
 
 First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue.
 
-### 2. Update `.travis.yml`
+### 2. Deploy the PR
+
+We recommend deploying your PR to a real staging server instead of running a local server on Travis.
+A staging environment will produce realistic performance numbers that are
+more representative of your production setup. The Lighthouse report will be more accurate.
 
 In `.travis.yml`, add an  `after_success` that **deploys the PR's changes to a staging server**.
 
-```
+```bash
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
 ```
 
- Since this is different for every hosting environment, it's left to the reader to figure out for
- their own setup.
+ Since every hosting environment has different deployment setups, the implementation of `deploy.sh` is left to the reader.
 
-> **Tip:** if you're using Google App Engine, check out [`deploy_pr_gae.sh`](https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/deploy_pr_gae.sh), which shows how to install the GAE SDK and deploy PR changes programmatically.
-
-**Why a staging server? Can I use localhost?**
-Yes, but we recommend that you deploy the PR to a real staging server instead of running a local server on Travis. The reason is that a staging environment will be more accurate and reflect your production setup. As an example, Lighthouse performance numbers will be more realistic.
+> **Tip:** Using Google App Engine? Check out [`deploy_pr_gae.sh`](https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/deploy_pr_gae.sh) which shows how to install the GAE SDK and deploy PR changes programmatically.
 
 ### 3. Call runlighthouse.js
 
-Install the script: `yarn add --dev https://github.com/ebidel/lighthouse-ci`
+Install the script:
 
-Then in `.travis.yml`, call [`runlighthouse.js`][runlighthouse-link] as the last step in `after_success`:
+    yarn add --dev https://github.com/ebidel/lighthouse-ci
 
-```
+Next, in `.travis.yml` call [`runlighthouse.js`][runlighthouse-link] as the last step in `after_success`:
+
+```yml
 install:
   - npm install # make sure to install the deps when Travis runs.
 after_success:
@@ -57,7 +59,7 @@ request containing the updated scores:
 Lighthouse CI can prevent PRs from being merged when the overall score falls below
 a specified value (`--score=96`):
 
-```
+```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
   - node node_modules/lighthouse-ci/runlighthouse.js --score=96 https://staging.example.com
@@ -67,7 +69,7 @@ after_success:
 
 **Options:**
 
-```sh
+```bash
 $ node runlighthouse.js -h
 
 Usage:
@@ -99,7 +101,7 @@ Examples:
 
 By default, `runlighthouse.js` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
 
-```
+```bash
 node node_modules/lighthouse-ci/runlighthouse.js --score=96 --runner=wpt https://staging.example.com
 ```
 
@@ -160,7 +162,7 @@ REST endpoints:
 
 **Note:** `runlighthouse.js` does this for you.
 
-```sh
+```bash
 curl -X POST \
   -H "Content-Type: application/json" \
   --data '{"format": "json", "url": "https://staging.example.com"}' \
