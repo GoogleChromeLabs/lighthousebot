@@ -67,7 +67,7 @@ after_success:
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
 
-**Options:**
+#### Options
 
 ```bash
 $ node runlighthouse.js -h
