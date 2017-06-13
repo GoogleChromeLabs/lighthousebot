@@ -2,9 +2,11 @@
 
 This repo contains the frontend and backend for the Lighthouse CI server.
 
-## Auditing a Github Pull Request
+## Auditing Github Pull Requests
 
 Lighthouse can be setup as part of your CI on Travis. As new pull requests come in, the **Lighthouse CI tests the changes and reports back the new score**.
+
+<img width="700" alt="Run Lighthouse on Github PRs" src="https://user-images.githubusercontent.com/238208/27059055-70ba6e86-4f89-11e7-8ead-932aab0f2634.png">
 
 To audit pull requests, do the following:
 
@@ -12,14 +14,17 @@ To audit pull requests, do the following:
 
 First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue.
 
-### 2. Deploy the PR changes
+### 2. Update `.travis.yml`
 
-In `.travis.yml`, add an  `after_success` that deploys the PR changes to a staging server. Since this is different for every hosting environment, it's left to the reader to figure out the details on doing that.
+In `.travis.yml`, add an  `after_success` that **deploys the PR's changes to a staging server**.
 
 ```
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
 ```
+
+ Since this is different for every hosting environment, it's left to the reader to figure out for
+ their own setup.
 
 > **Tip:** if you're using Google App Engine, check out [`deploy_pr_gae.sh`](https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/deploy_pr_gae.sh), which shows how to install the GAE SDK and deploy PR changes programmatically.
 
@@ -28,7 +33,7 @@ Yes, but we recommend that you deploy the PR to a real staging server instead of
 
 ### 3. Call runLighthouse.js
 
-> Get this script from: `yarn add --dev https://github.com/ebidel/lighthouse-ci#0.0.1`
+> Get the script: `yarn add --dev https://github.com/ebidel/lighthouse-ci#VERSION`
 
 The last step in `after_success` is to call [`runLighthouse.js`][runlighthouse-link]:
 

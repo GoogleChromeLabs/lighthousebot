@@ -1,0 +1,11 @@
+# Folders
+.vscode/
+node_modules/
+builder/
+frontend/
+
+# Dev files
+deploy.sh
+.editorconfig
+.eslintignore
+.eslintrc.js
