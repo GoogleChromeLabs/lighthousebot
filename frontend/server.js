@@ -39,11 +39,11 @@ app.use(express.static('public', {
 }));
 
 app.get('/', (req, res) => {
-  res.status(200).send(
-      'See https://github.com/ebidel/lighthouse-ci for documentation.');
+  res.redirect(require('../package.json').homepage);
 });
 
-app.get('/wpt_ping', (req, res) => {
+// Handler pingback result from webpagetest.
+app.get('/wpt_ping', async (req, res) => {
   const wptTestId = req.query.id;
 
   if (!WPT_PR_MAP.has(wptTestId)) {
@@ -53,67 +53,85 @@ app.get('/wpt_ping', (req, res) => {
 
   const {prInfo, config} = WPT_PR_MAP.get(wptTestId);
 
-  fetch(`https://www.webpagetest.org/jsonResult.php?test=${wptTestId}`)
-    .then(resp => resp.json())
-    .then(json => {
-      if (!json.data || !json.data.lighthouse) {
-        console.log(json);
-        throw new Error(
-            'Lighthouse results were not found in WebPageTest results.');
+  const resp = await fetch(`https://www.webpagetest.org/jsonResult.php?test=${wptTestId}`);
+
+  try {
+    const json = await resp.json();
+
+    if (!json.data || !json.data.lighthouse) {
+      console.log(json);
+      throw new Error('Lighthouse results were not found in WebPageTest results.');
+    }
+
+    const lhResults = json.data.lighthouse;
+    const targetUrl = `https://www.webpagetest.org/lighthouse.php?test=${wptTestId}`;
+
+    if (config.minPassScore) {
+      await CI.assignPassFailToPR(lhResults, config, Object.assign({
+        target_url: targetUrl
+      }, prInfo));
+    } else {
+      await CI.updateGithubStatus(Object.assign({
+        description: 'Auditing complete. See scores above.',
+        state: 'success',
+        target_url: targetUrl
+      }, prInfo));
+    }
+
+    // Post comment on issue with updated LH scores.
+    if (config.addComment) {
+      try {
+        await CI.postLighthouseComment(prInfo, lhResults);
+      } catch (err) {
+        res.json('Error posting Lighthouse comment to PR.');
       }
+    }
 
-      const opts = Object.assign({
-        target_url: `https://www.webpagetest.org/lighthouse.php?test=${wptTestId}`
-      }, prInfo);
+    WPT_PR_MAP.delete(wptTestId); // cleanup
 
-      const lhResults = json.data.lighthouse;
-
-      return CI.assignPassFailToPR(lhResults, config, opts).then(score => {
-        WPT_PR_MAP.delete(wptTestId); // Cleanup
-        res.status(200).send({score});
-      });
-    })
-    .catch(err => {
-      CI.handleError(err, prInfo);
-      res.json(err);
-    });
+    res.status(200).send({score: LighthouseCI.getOverallScore(lhResults)});
+  } catch (err) {
+    CI.handleError(err, prInfo);
+    res.json(err);
+  }
 });
 
-app.post('/run_on_wpt', (req, res) => {
+// Handler to start Lighthouse run on webpagetest.
+app.post('/run_on_wpt', async (req, res) => {
   const config = Object.assign({
     pingbackUrl: `${req.protocol}://${req.get('host')}/wpt_ping`
   }, req.body);
-  const testUrl = config.testUrl;
 
   const prInfo = {
     repo: config.repo.name,
     owner: config.repo.owner,
+    number: config.pr.number,
     sha: config.pr.sha
   };
 
-  return CI.startOnWebpageTest(WPT_API_KEY, testUrl, config.pingbackUrl)
-    .then(json => {
-      if (!json.data || !json.data.testId) {
-        throw new Error(
-            'Lighthouse results were not found in WebPageTest results.');
-      }
+  try {
+    const json = await CI.startOnWebpageTest(WPT_API_KEY, config.testUrl, config.pingbackUrl);
 
-      // stash wpt id -> github pr sha mapping.
-      WPT_PR_MAP.set(json.data.testId, {prInfo, config});
+    if (!json.data || !json.data.testId) {
+      throw new Error(
+          'Lighthouse results were not found in WebPageTest results.');
+    }
 
-      return CI.updateGithubStatus(Object.assign({
-        target_url: json.data.userUrl
-      }, prInfo, GITHUB_PENDING_STATUS));
-    })
-    .then(result => {
-      res.status(200).send(result);
-    })
-    .catch(err => {
-      CI.handleError(err, prInfo);
-      res.status(500).send(err.message);
-    });
+    // Stash wpt id -> github pr sha mapping.
+    WPT_PR_MAP.set(json.data.testId, {prInfo, config});
+
+    const result = await CI.updateGithubStatus(Object.assign({
+      target_url: json.data.userUrl
+    }, prInfo, GITHUB_PENDING_STATUS));
+
+    res.status(200).send(result);
+  } catch (err) {
+    CI.handleError(err, prInfo);
+    res.status(500).send(err.message);
+  }
 });
 
+// Handler to start Lighthouse run on Chrome.
 app.post('/run_on_chrome', async (req, res) => {
   const config = Object.assign({}, req.body);
 
@@ -206,7 +224,7 @@ app.post('/run_on_chrome', async (req, res) => {
 // });
 
 // app.get('/test_wpt', (req, res) => {
-//   const pingbackUrl = 'https://14195295.ngrok.io/wpt_ping';
+//   const pingbackUrl = 'https://68002859.ngrok.io/wpt_ping';
 //   const testUrl = 'https://www.chromestatus.com/features';
 
 //   return CI.startOnWebpageTest(testUrl, pingbackUrl)

@@ -121,14 +121,10 @@ function run(config) {
       body = JSON.stringify(Object.assign({format: 'json'}, config));
   }
 
-  fetch(endpoint, {
-    method: 'POST',
-    body,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-API-KEY': API_KEY // Keep usage tight for now.
-    }
-  })
+  fetch(endpoint, {method: 'POST', body, headers: {
+    'Content-Type': 'application/json',
+    'X-API-KEY': API_KEY
+  }})
   .then(resp => resp.json())
   .then(json => {
     if (config.runner === RUNNERS.wpt) {

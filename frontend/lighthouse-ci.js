@@ -70,9 +70,9 @@ class LighthouseCI {
     params.set('f', 'json');
     params.set('pingback', pingback); // The pingback is passed an "id" parameter of the test.
     // TODO: match emulation to LH settings. Nexus 5 doesn't work atm.
-    // params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3G_EM');
+    params.set('location', 'Dulles_Nexus5:Nexus 5 - Chrome Beta.3G_EM');
     // For native: Dulles_Linux:Chrome.Native
-    params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
+    // params.set('location', 'Dulles_MotoG4:Moto G4 - Chrome Beta.3GFast');
     params.set('mobile', 1); // Emulate mobile (for desktop cases).
     params.set('type', 'lighthouse'); // LH-only run.
     params.set('lighthouse', 1);
@@ -116,10 +116,10 @@ class LighthouseCI {
    * @param {!Object} lhResults Lighthouse results object.
    * @param {!{minPassScore: number}} config
    * @param {!Object} opts Options to set the status with.
-   * @return {!Promise<number>} Lighthouse score.
+   * @return {!Promise<number>} Overall lighthouse score.
    */
   assignPassFailToPR(lhResults, config, opts) {
-    const score = LighthouseCI.getOverallScore(lhResults);
+    const score = Math.round(LighthouseCI.getOverallScore(lhResults));
     const passing = config.minPassScore <= score;
 
     let description = `Failed. This PR drops your score to ${score}/100 ` +
