@@ -31,16 +31,18 @@ after_success:
 **Why a staging server? Can I use localhost?**
 Yes, but we recommend that you deploy the PR to a real staging server instead of running a local server on Travis. The reason is that a staging environment will be more accurate and reflect your production setup. As an example, Lighthouse performance numbers will be more realistic.
 
-### 3. Call runLighthouse.js
+### 3. Call runlighthouse.js
 
-> Get the script: `yarn add --dev https://github.com/ebidel/lighthouse-ci#VERSION`
+Install the script: `yarn add --dev https://github.com/ebidel/lighthouse-ci`
 
-The last step in `after_success` is to call [`runLighthouse.js`][runlighthouse-link]:
+Then in `.travis.yml`, call [`runlighthouse.js`][runlighthouse-link] as the last step in `after_success`:
 
 ```
+install:
+  - npm install # make sure to install the deps when Travis runs.
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - node runLighthouse.js https://staging.example.com
+  - node node_modules/lighthouse-ci/runlighthouse.js https://staging.example.com
 ```
 
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
@@ -58,7 +60,7 @@ a specified value (`--score=96`):
 ```
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - node runLighthouse.js --score=96 https://staging.example.com
+  - node node_modules/lighthouse-ci/runlighthouse.js --score=96 https://staging.example.com
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
@@ -66,10 +68,10 @@ after_success:
 **Options:**
 
 ```sh
-$ node runLighthouse.js -h
+$ node runlighthouse.js -h
 
 Usage:
-runLighthouse.js [--score=<score>] [--no-comment] [--runner=chrome,wpt] <url>
+runlighthouse.js [--score=<score>] [--no-comment] [--runner=chrome,wpt] <url>
 
 Options:
   --score      Minimum score for the pull request to be considered "passing".
@@ -84,21 +86,21 @@ Options:
 Examples:
 
   Runs Lighthouse and posts a summary of the results.
-    runLighthouse.js https://example.com
+    runlighthouse.js https://example.com
 
   Fails the PR if the score drops below 93. Posts the summary comment.
-    runLighthouse.js --score=93 https://example.com
+    runlighthouse.js --score=93 https://example.com
 
   Runs Lighthouse on WebPageTest. Fails the PR if the score drops below 93.
-    runLighthouse.js --score=93 --runner=wpt --no-comment https://example.com
+    runlighthouse.js --score=93 --runner=wpt --no-comment https://example.com
 ```
 
 ## Running on WebPageTest instead of Chrome
 
-By default, `runLighthouse.js` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
+By default, `runlighthouse.js` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
 
 ```
-node runLighthouse.js --score=96 --runner=wpt https://staging.example.com
+node node_modules/lighthouse-ci/runlighthouse.js --score=96 --runner=wpt https://staging.example.com
 ```
 
 At the end of testing, your PR will be updated with a link to the WebPageTest results containing the Lighthouse report!
@@ -123,7 +125,7 @@ REST endpoints:
 
 #### Example
 
-**Note:** this is what `runLighthouse.js` does for you.
+**Note:** `runlighthouse.js` does this for you.
 
 ```
 POST https://lighthouse-ci.appspot.com/run_on_chrome
@@ -156,7 +158,7 @@ REST endpoints:
 
 #### Example
 
-**Note:** this is what `runLighthouse.js` does for you.
+**Note:** `runlighthouse.js` does this for you.
 
 ```sh
 curl -X POST \
@@ -242,4 +244,4 @@ repo. The CI endpoint could pull a `.lighthouse_ci` file that includes meta
 data `{minLighthouseScore: 96, testUrl: 'https://staging.example.com'}`. However,
 this requires work from the developer.
 
-[runlighthouse-link]: https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/runLighthouse.js
+[runlighthouse-link]: https://github.com/ebidel/lighthouse-ci/blob/master/runlighthouse.js
