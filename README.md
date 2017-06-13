@@ -52,12 +52,12 @@ request containing the updated scores:
 
 <img width="779" alt="Lighthouse Github comment" src="https://user-images.githubusercontent.com/238208/27057277-5282fcca-4f80-11e7-8bbe-73117f0768d0.png">
 
-**Note**: turn that off by passing the `--no-comment` flag.
+You can also opt-out of the comment by using the `--no-comment` flag.
 
 #### Failing a PR when it drops your Lighthouse score
 
 Lighthouse CI can prevent PRs from being merged when the overall score falls below
-a specified value (`--score=96`):
+a specified value. Just include the `--score` flag:
 
 ```yml
 after_success:
@@ -114,7 +114,7 @@ This repo contains several different pieces for the Lighthouse CI: a backend, fr
 ### UI Frontend
 > Quick way to try Lighthouse: https://lighthouse-ci.appspot.com/try
 
-#### Relevant source:
+Relevant source:
 
 - `frontend/public/` - UI for https://lighthouse-ci.appspot.com/try.
 
@@ -148,7 +148,7 @@ Content-Type: application/json
 }
 ```
 
-#### Relevant source:
+Relevant source:
 
 - [`frontend/server.js`](https://github.com/ebidel/lighthouse-ci/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR.
 
@@ -169,7 +169,7 @@ curl -X POST \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```
 
-#### Relevant source:
+Relevant source:
 
 Contains example Dockerfiles for running Lighthouse using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome) and full Chrome. Both setups us [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node).
 
@@ -179,7 +179,7 @@ Contains example Dockerfiles for running Lighthouse using [Headless Chrome](http
 
 ## Running your own CI server
 
-TODO
+TODO: fill me in
 
 - Add a `CI_HOST` parameter to Travis settings.
 
