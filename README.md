@@ -192,17 +192,22 @@ Initial setup:
 
 Run the dev server:
 
+    cd frontend
     yarn start
 
 This will start a web server and use the token in `.oauth_token`. The token is used to update PR status in Github.
 
-Follow the steps in [Testing a Github PR](#testing-a-github-pr) for setting up
+In your test repo:
+
+- Run `yarn add --dev https://github.com/ebidel/lighthouse-ci`
+- Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
 your repo.
 
 Notes:
 
 - If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).
-- To make changes to the CI server, you'll probably want to run [ngrok](https://ngrok.com/) so you can test against a local server instead of deploying for each change.
+- To make changes to the CI server, you'll probably want to run [ngrok](https://ngrok.com/) so you can test against a local server instead of deploying for each change. In Travis settings,
+add a `CI_HOST` env variable that points to your ngrok instance.
 
 ##### Generating a new OAuth2 token
 
