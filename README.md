@@ -14,15 +14,20 @@ To audit pull requests, do the following:
 
 ### 1. Initial setup
 
+#### Add the lighthousebot to your repo
+
 First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue as the little Lighthouse icon.
 
-Next, [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will soon be enforced and are necessary so we can contact users when there are changes to the CI system.
+#### Get an API Key
 
-Lastly, update Travis settings by adding an `API_KEY` environment variables with your key:
+[Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will eventually be
+enforced and are necessary so we can contact you when there are changes to the CI system.
+
+Once you have a key, update Travis settings by adding an `API_KEY` environment variables with your key:
 
 <img width="875" alt="Travis API_KEY env variable " src="https://user-images.githubusercontent.com/238208/27442363-d6329098-5724-11e7-848e-a46c76b1a047.png">
 
-That makes the runlighthouse script include your key in requests made to the CI server.
+The `runlighthouse.js` script will include your key in requests made to the CI server.
 
 ### 2. Deploy the PR
 
@@ -142,6 +147,7 @@ REST endpoints:
 ```
 POST https://lighthouse-ci.appspot.com/run_on_chrome
 Content-Type: application/json
+X-API-KEY: <YOUR_API_KEY>
 
 {
   testUrl: "https://staging.example.com",
@@ -175,6 +181,7 @@ REST endpoints:
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
+  -H "X-API-KEY: <YOUR_API_KEY>" \
   --data '{"format": "json", "url": "https://staging.example.com"}' \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```
@@ -189,11 +196,11 @@ Contains example Dockerfiles for running Lighthouse using [Headless Chrome](http
 
 ## Running your own CI server
 
-Want to setup your own Lighthouse instance in a Docker container? 
+Want to setup your own Lighthouse instance in a Docker container?
 
 The good news is Docker does most of the work for us! The bulk of getting started is in [Development](#development). That will take you through initial setup and show how to run the CI frontend.
 
-For the backend, see [builder/README.md](https://github.com/ebidel/lighthouse-ci/blob/master/builder/README.md) for building and running the Docker container.  
+For the backend, see [builder/README.md](https://github.com/ebidel/lighthouse-ci/blob/master/builder/README.md) for building and running the Docker container.
 
 Other changes, to the "Development" section:
 
