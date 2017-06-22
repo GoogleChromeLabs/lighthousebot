@@ -4,6 +4,8 @@ This repo contains the frontend and backend for the Lighthouse CI server.
 
 ## Auditing Github Pull Requests
 
+> Please note: This drop in service is considered **Beta**. There are no SLAs or uptime guarantees. If you're interested in running your own CI server in a Docker container, check out [Running your own CI server](#running-your-own-ci-server).
+
 Lighthouse can be setup as part of your CI on Travis. As new pull requests come in, the **Lighthouse CI tests the changes and reports back the new score**.
 
 <img width="700" alt="Run Lighthouse on Github PRs" src="https://user-images.githubusercontent.com/238208/27059055-70ba6e86-4f89-11e7-8ead-932aab0f2634.png">
@@ -187,9 +189,16 @@ Contains example Dockerfiles for running Lighthouse using [Headless Chrome](http
 
 ## Running your own CI server
 
-TODO: fill me in
+Want to setup your own Lighthouse instance in a Docker container? 
 
-- Add a `CI_HOST` parameter to Travis settings.
+The good news is Docker does most of the work for us! The bulk of getting started is in [Development](#development). That will take you through initial setup and show how to run the CI frontend.
+
+For the backend, see [builder/README.md](https://github.com/ebidel/lighthouse-ci/blob/master/builder/README.md) for building and running the Docker container.  
+
+Other changes, to the "Development" section:
+
+- Create a personal OAuth token in https://github.com/settings/tokens. Drop it in `frontend/.oauth_token`.
+- Add a `CI_HOST` env variable to Travis settings that points to your own URL. The one where you deploy the Docker container.
 
 ## Development
 
@@ -221,12 +230,14 @@ add a `CI_HOST` env variable that points to your ngrok instance.
 
 If you need to generate a new OAuth token:
 
-1. Sign in to the `[lighthousebot](https://github.com/lighthousebot) Github account. The credentials are in the usual v password tool.
+1. Sign in to the `[lighthousebot](https://github.com/lighthousebot) Github account. (Admins: the credentials are in the usual password tool).
 2. Visit personal access tokens: https://github.com/settings/tokens.
 3. Regenerate the token. **Important**: this invalidates the existing token so other developers will need to be informed.
 4. Update token in `frontend/.oauth_token`.
 
 #### Deploy
+
+By default, these scripts deploy to [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node). If you're running your own CI server, use your own setup :)
 
 Deploy the frontend:
 
