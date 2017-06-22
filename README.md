@@ -12,7 +12,15 @@ To audit pull requests, do the following:
 
 ### 1. Initial setup
 
-First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue.
+First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue as the little Lighthouse icon.
+
+Next, [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will soon be enforced and are necessary so we can contact users when there are changes to the CI system.
+
+Lastly, update Travis settings by adding an `API_KEY` environment variables with your key:
+
+<img width="875" alt="Travis API_KEY env variable " src="https://user-images.githubusercontent.com/238208/27442363-d6329098-5724-11e7-848e-a46c76b1a047.png">
+
+That makes the runlighthouse script include your key in requests made to the CI server.
 
 ### 2. Deploy the PR
 
