@@ -109,6 +109,8 @@ app.post('/run_on_wpt', async (req, res) => {
     sha: config.pr.sha
   };
 
+  console.log(`${API_KEY_HEADER}: ${req.get(API_KEY_HEADER)}`);
+
   try {
     const json = await CI.startOnWebpageTest(WPT_API_KEY, config.testUrl, config.pingbackUrl);
 
@@ -158,6 +160,8 @@ app.post('/run_on_chrome', async (req, res) => {
   } catch (err) {
     CI.handleError(err, prInfo);
   }
+
+  console.log(`${API_KEY_HEADER}: ${req.get(API_KEY_HEADER)}`);
 
   // Run Lighthouse CI against the PR changes.
   let lhResults;
