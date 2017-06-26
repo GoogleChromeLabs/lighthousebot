@@ -95,6 +95,8 @@ app.post('/ci', (req, res, next) => {
   //   return;
   // }
 
+  console.log(`${API_KEY_HEADER}: ${req.get(API_KEY_HEADER)}`);
+
   runLH(req.body.url, req.body.format, res, next);
 });
 
