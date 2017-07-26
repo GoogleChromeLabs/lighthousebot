@@ -5,14 +5,14 @@ Running Lighthouse in a Docker container.
 ## Build the image
 
 ```bash
-docker build -t lighthouse_ci .
+./docker_build.sh
 ```
 
 ## Run the container
 
 ```bash
 ## Run a new container
-docker run -d -p 8080:8080 --cap-add=SYS_ADMIN lighthouse_ci
+./docker_run.sh
 ```
 
 ## Usage
