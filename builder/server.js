@@ -70,7 +70,7 @@ function runLighthouseAsEventStream(req, res, next) {
   });
 
   child.on('close', statusCode => {
-    const serverOrigin = `https://${req.host}/`;
+    const serverOrigin = `http://${req.host}:${PORT}/`;
     res.write(`data: done ${serverOrigin + file}\n\n`);
     res.status(410).end();
     console.log(log);
