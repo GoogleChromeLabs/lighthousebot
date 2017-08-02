@@ -19,7 +19,7 @@ function runLH(url, format = 'domhtml', res, next) {
   const file = `report.${Date.now()}.${extension}`;
   const fileSavePath = './reports/';
 
-  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--no-sandbox --headless"'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--remote-debugging-port=9222 --no-sandbox --headless"'];
   const child = spawn('lighthouse', [...args, url]);
 
   child.stderr.on('data', data => {
@@ -59,7 +59,7 @@ function runLighthouseAsEventStream(req, res, next) {
   const file = `report.${Date.now()}.${extension}`;
   const fileSavePath = './reports/';
 
-  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--no-sandbox --headless"'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--remote-debugging-port=9222 --no-sandbox --headless"'];
   const child = spawn('lighthouse', [...args, url]);
 
   let log = 'lighthouse ' + args.join(' ') + ' ' + url + '\n';
