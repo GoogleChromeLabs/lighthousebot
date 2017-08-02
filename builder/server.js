@@ -17,8 +17,9 @@ function runLH(url, format = 'domhtml', res, next) {
 
   const extension = format === 'domhtml' ? 'html' : format;
   const file = `report.${Date.now()}.${extension}`;
+  const fileSavePath = './reports/';
 
-  const args = [`--output-path=${file}`, `--output=${format}`, '--port=9222'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--no-sandbox --headless"'];
   const child = spawn('lighthouse', [...args, url]);
 
   child.stderr.on('data', data => {
@@ -58,10 +59,10 @@ function runLighthouseAsEventStream(req, res, next) {
   const file = `report.${Date.now()}.${extension}`;
   const fileSavePath = './reports/';
 
-  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--chrome-flags="--headless"'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222', '--chrome-flags="--no-sandbox --headless"'];
   const child = spawn('lighthouse', [...args, url]);
 
-  let log = '';
+  let log = 'lighthouse ' + args.join(' ') + ' ' + url + '\n';
 
   child.stderr.on('data', data => {
     const str = data.toString();
