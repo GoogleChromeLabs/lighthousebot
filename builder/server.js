@@ -58,7 +58,7 @@ function runLighthouseAsEventStream(req, res, next) {
   const file = `report.${Date.now()}.${extension}`;
   const fileSavePath = './reports/';
 
-  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--chrome-flags="--headless"'];
   const child = spawn('lighthouse', [...args, url]);
 
   let log = '';

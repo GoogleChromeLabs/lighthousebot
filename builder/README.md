@@ -26,7 +26,10 @@ curl -X POST \
 ```
 
 ```bash
-curl -i -H "Accept: application/json" -H "Content-Type: application/json" -X GET 'https://builder-dot-lighthouse-ci.appspot.com/stream?format=json&url=https://staging.example.com'
+curl -i \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -X GET 'https://builder-dot-lighthouse-ci.appspot.com/stream?format=json&url=https://staging.example.com'
 ```
 
 where `format` is one of `json`, `html`.
