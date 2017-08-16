@@ -6,7 +6,7 @@ const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 
 const API_KEY_HEADER = 'X-API-KEY';
-const PORT = 8080;
+const PORT = 8085;
 
 // Handler for CI.
 function runLH(url, format = 'domhtml', res, next) {
@@ -17,8 +17,9 @@ function runLH(url, format = 'domhtml', res, next) {
 
   const extension = format === 'domhtml' ? 'html' : format;
   const file = `report.${Date.now()}.${extension}`;
+  const fileSavePath = './reports/';
 
-  const args = [`--output-path=${file}`, `--output=${format}`, '--port=9222'];
+  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
   const child = spawn('lighthouse', [...args, url]);
 
   child.stderr.on('data', data => {
@@ -61,7 +62,7 @@ function runLighthouseAsEventStream(req, res, next) {
   const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
   const child = spawn('lighthouse', [...args, url]);
 
-  let log = '';
+  let log = 'lighthouse ' + args.join(' ') + ' ' + url + '\n';
 
   child.stderr.on('data', data => {
     const str = data.toString();
@@ -70,7 +71,7 @@ function runLighthouseAsEventStream(req, res, next) {
   });
 
   child.on('close', statusCode => {
-    const serverOrigin = `https://${req.host}/`;
+    const serverOrigin = `http://${req.host}:${PORT}/`;
     res.write(`data: done ${serverOrigin + file}\n\n`);
     res.status(410).end();
     console.log(log);

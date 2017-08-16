@@ -13,7 +13,7 @@ const startOver = document.querySelector('#startover');
 // const params = new URLSearchParams(location.search);
 // let setTimeoutId_;
 const ENDPOINT_ORIGIN = location.hostname === 'localhost' ?
-    'http://localhost:8080' : 'https://builder-dot-lighthouse-ci.appspot.com';
+    'http://localhost:8085' : 'https://builder-dot-lighthouse-ci.appspot.com';
 
 // /**
 //  * @param {number} score
