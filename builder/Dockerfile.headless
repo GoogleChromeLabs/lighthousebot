@@ -51,8 +51,8 @@ RUN yarn install
 COPY server.js /
 RUN chmod +x /server.js
 
-# Expose port 8080
-EXPOSE 8080
+# Expose port 8085
+EXPOSE 8085
 
 ## PART 4: Final setup
 ## ===================

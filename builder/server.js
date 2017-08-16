@@ -6,7 +6,7 @@ const spawn = require('child_process').spawn;
 const bodyParser = require('body-parser');
 
 const API_KEY_HEADER = 'X-API-KEY';
-const PORT = 8080;
+const PORT = 8085;
 
 // Handler for CI.
 function runLH(url, format = 'domhtml', res, next) {
