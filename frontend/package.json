@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "Apache-2.0",
   "scripts": {
+    "serve": "PORT=8081 node server.js",
     "start": "OAUTH_TOKEN=`cat .oauth_token` node server.js"
   },
   "engines": {

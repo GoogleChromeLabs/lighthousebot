@@ -9,14 +9,13 @@ const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
 // Handler for CI.
-function runLH(url, format = 'domhtml', res, next) {
+function runLH(url, format = 'html', res, next) {
   if (!url) {
     res.status(400).send('Please provide a URL.');
     return;
   }
 
-  const extension = format === 'domhtml' ? 'html' : format;
-  const file = `report.${Date.now()}.${extension}`;
+  const file = `report.${Date.now()}.${format}`;
 
   const args = [`--output-path=${file}`, `--output=${format}`, '--port=9222'];
   const child = spawn('lighthouse', [...args, url]);
@@ -38,7 +37,7 @@ function runLH(url, format = 'domhtml', res, next) {
 // Serve sent event handler for https://lighthouse-ci.appspot.com/try.
 function runLighthouseAsEventStream(req, res, next) {
   const url = req.query.url;
-  const format = req.query.format || 'domhtml';
+  const format = req.query.format || 'html';
 
   if (!url) {
     res.status(400).send('Please provide a URL.');
@@ -54,8 +53,7 @@ function runLighthouseAsEventStream(req, res, next) {
     'X-Accel-Buffering': 'no' // Forces Flex App Engine to keep connection open for SSE.
   });
 
-  const extension = format === 'domhtml' ? 'html' : format;
-  const file = `report.${Date.now()}.${extension}`;
+  const file = `report.${Date.now()}.${format}`;
   const fileSavePath = './reports/';
 
   const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
