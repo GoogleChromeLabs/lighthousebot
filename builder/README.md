@@ -1,6 +1,6 @@
 # Lighthouse CI backend
 
-Running Lighthouse in a Docker container.
+Running Lighthouse in a Docker container on App Engine.
 
 ## Development
 
