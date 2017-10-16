@@ -2,20 +2,28 @@
 
 Running Lighthouse in a Docker container.
 
-## Build the image
+## Development
+
+First, yourself the [Google Cloud SDK](https://cloud.google.com/sdk/).
+
+### Build the image
+
+Fire up Docker, then run:
 
 ```bash
 ./docker_build.sh
 ```
 
-## Run the container
+### Run the container locally
+
+Be sure Docker is running, then run:
 
 ```bash
 ## Run a new container
 ./docker_run.sh
 ```
 
-## Usage
+### Testing / Usage
 
 ```bash
 curl -X POST \
@@ -26,3 +34,11 @@ curl -X POST \
 ```
 
 where `format` is one of `json`, `html`.
+
+## Deploy to Google App Engine
+
+When you're ready to deploy the app, run  `gcloud deploy` with your app id and version:
+
+```
+gcloud app deploy app.yaml --project YOUR_PROJECT_ID --version 2017-10-16
+```
