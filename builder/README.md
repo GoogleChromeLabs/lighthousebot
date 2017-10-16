@@ -1,10 +1,10 @@
 # Lighthouse CI backend
 
-Running Lighthouse in a Docker container on App Engine.
+> Run Lighthouse in a Docker container on App Engine.
 
 ## Development
 
-First, yourself the [Google Cloud SDK](https://cloud.google.com/sdk/).
+First, get yourself the [Google Cloud SDK](https://cloud.google.com/sdk/).
 
 ### Build the image
 
