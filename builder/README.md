@@ -30,7 +30,7 @@ curl -X POST \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: <YOUR_API_KEY>" \
   --data '{"format": "json", "url": "https://staging.example.com"}' \
-  https://builder-dot-lighthouse-ci.appspot.com/ci
+  https://localhost:8080/ci
 ```
 
 where `format` is one of `json`, `html`.
