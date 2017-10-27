@@ -23,9 +23,7 @@ const API_KEY = process.env.LIGHTHOUSE_API_KEY || process.env.API_KEY;
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 if (process.env.API_KEY) {
-  console.log('Warning:
-The environment variable API_KEY is deprecated.
-Please use LIGHTHOUSE_API_KEY instead.');
+  console.log('Warning: The environment variable API_KEY is deprecated. Please use LIGHTHOUSE_API_KEY instead.');
 }
 
 function printUsageAndExit() {
