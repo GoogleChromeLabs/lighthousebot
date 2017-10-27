@@ -23,9 +23,9 @@ First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator o
 [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will eventually be
 enforced and are necessary so we can contact you when there are changes to the CI system.
 
-Once you have a key, update Travis settings by adding an `API_KEY` environment variables with your key:
+Once you have a key, update Travis settings by adding an `LIGHTHOUSE_API_KEY` environment variables with your key:
 
-<img width="875" alt="Travis API_KEY env variable " src="https://user-images.githubusercontent.com/238208/27442363-d6329098-5724-11e7-848e-a46c76b1a047.png">
+<img width="875" alt="Travis LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/2837064/32105842-2635de42-bb2a-11e7-983a-921a802d38b3.jpg">
 
 The `runlighthouse.js` script will include your key in requests made to the CI server.
 
@@ -147,7 +147,7 @@ REST endpoints:
 ```
 POST https://lighthouse-ci.appspot.com/run_on_chrome
 Content-Type: application/json
-X-API-KEY: <YOUR_API_KEY>
+X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>
 
 {
   testUrl: "https://staging.example.com",
@@ -181,7 +181,7 @@ REST endpoints:
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
-  -H "X-API-KEY: <YOUR_API_KEY>" \
+  -H "X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>" \
   --data '{"format": "json", "url": "https://staging.example.com"}' \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```

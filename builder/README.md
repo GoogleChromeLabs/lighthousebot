@@ -28,7 +28,7 @@ Be sure Docker is running, then run:
 ```bash
 curl -X POST \
   -H "Content-Type: application/json" \
-  -H "X-API-KEY: <YOUR_API_KEY>" \
+  -H "X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>" \
   --data '{"format": "json", "url": "https://staging.example.com"}' \
   https://localhost:8080/ci
 ```
