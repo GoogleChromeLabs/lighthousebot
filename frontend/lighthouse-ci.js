@@ -150,13 +150,13 @@ class LighthouseCI {
     });
 
     const body = `
-Updated [Lighthouse](https://developers.google.com/web/tools/lighthouse/) report for the changes in this PR:
+Updated [Lighthouse report](${lhResults.url}) for the changes in this PR:
 
 | Category  | Score |
-| ------------- | ------------- |
+| --------- | ----- |
 ${rows}
 
-_Tested with Lighthouse version: ${lhResults.lighthouseVersion}_`;
+_Tested with [Lighthouse](https://developers.google.com/web/tools/lighthouse/) version: ${lhResults.lighthouseVersion}_`;
 
     const score = LighthouseCI.getOverallScore(lhResults);
 
