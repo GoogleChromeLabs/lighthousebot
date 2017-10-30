@@ -237,7 +237,7 @@ add a `CI_HOST` env variable that points to your ngrok instance.
 
 If you need to generate a new OAuth token:
 
-1. Sign in to the `[lighthousebot](https://github.com/lighthousebot) Github account. (Admins: the credentials are in the usual password tool).
+1. Sign in to the [lighthousebot](https://github.com/lighthousebot) Github account. (Admins: the credentials are in the usual password tool).
 2. Visit personal access tokens: https://github.com/settings/tokens.
 3. Regenerate the token. **Important**: this invalidates the existing token so other developers will need to be informed.
 4. Update token in `frontend/.oauth_token`.
