@@ -37,11 +37,14 @@ function runLH(req, res, next) {
     const serverOrigin = `https://${req.host}/`;
 
     const file = `${fileSavePath}.report.${format}`;
-    let fileContent = require(`/${file}`);
-    fileContent.reportUrl = `${serverOrigin + fileSavePath}.report.html`;
-    fileContent = JSON.stringify(fileContent, null, 2);
 
-    fs.writeFileSync(`${file}`, fileContent);
+    if (format === 'json') {
+      let fileContent = require(`/${file}`);
+      fileContent.reportUrl = `${serverOrigin + fileSavePath}.report.html`;
+      fileContent = JSON.stringify(fileContent, null, 2);
+
+      fs.writeFileSync(`${file}`, fileContent);
+    }
 
     res.sendFile(`/${file}`, {}, err => {
       if (err) {
