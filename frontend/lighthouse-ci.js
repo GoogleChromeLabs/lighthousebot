@@ -150,7 +150,7 @@ class LighthouseCI {
     });
 
     const body = `
-Updated [Lighthouse report](${lhResults.url}) for the changes in this PR:
+Updated [Lighthouse report](${lhResults.reportUrl}) for the changes in this PR:
 
 | Category  | Score |
 | --------- | ----- |

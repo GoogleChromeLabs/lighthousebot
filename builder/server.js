@@ -9,15 +9,24 @@ const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
 // Handler for CI.
-function runLH(url, format = 'html', res, next) {
+function runLH(req, res, next) {
+  const url = req.body.url;
+  const format = req.body.format || 'html';
+
   if (!url) {
     res.status(400).send('Please provide a URL.');
     return;
   }
 
-  const file = `report.${Date.now()}.${format}`;
+  const fileName = `${Date.now()}`;
+  const fileSavePath = `reports/${fileName}`;
 
-  const args = [`--output-path=${file}`, `--output=${format}`, '--port=9222'];
+  const args = [
+    `--output-path=${fileSavePath}`,
+    `--output=${format}`,
+    '--output=html',
+    '--port=9222'
+  ];
   const child = spawn('lighthouse', [...args, url]);
 
   child.stderr.on('data', data => {
@@ -25,6 +34,15 @@ function runLH(url, format = 'html', res, next) {
   });
 
   child.on('close', statusCode => {
+    const serverOrigin = `https://${req.host}/`;
+
+    const file = `${fileSavePath}.report.${format}`;
+    let fileContent = require(`/${file}`);
+    fileContent.reportUrl = `${serverOrigin + fileSavePath}.report.html`;
+    fileContent = JSON.stringify(fileContent, null, 2);
+
+    fs.writeFileSync(`${file}`, fileContent);
+
     res.sendFile(`/${file}`, {}, err => {
       if (err) {
         next(err);
@@ -95,7 +113,7 @@ app.post('/ci', (req, res, next) => {
 
   console.log(`${API_KEY_HEADER}: ${req.get(API_KEY_HEADER)}`);
 
-  runLH(req.body.url, req.body.format, res, next);
+  runLH(req, res, next);
 });
 
 app.get('/stream', (req, res, next) => {
