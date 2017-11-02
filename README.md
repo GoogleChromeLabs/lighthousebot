@@ -2,7 +2,7 @@
 
 This repo contains the frontend and backend for the Lighthouse CI server.
 
-## Auditing Github Pull Requests
+## Auditing GitHub Pull Requests
 
 > Please note: This drop in service is considered **Beta**. There are no SLAs or uptime guarantees. If you're interested in running your own CI server in a Docker container, check out [Running your own CI server](#running-your-own-ci-server).
 
