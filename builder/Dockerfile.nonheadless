@@ -49,19 +49,6 @@ RUN chmod +x /chromeuser-script_nonheadless.sh
 COPY entrypoint_nonheadless.sh /
 RUN chmod +x /entrypoint_nonheadless.sh
 
-# # Add lhuser user.
-# RUN groupadd -r lhuser && useradd -r -g lhuser -G audio,video lhuser \
-#     && mkdir -p /home/lhuser/Downloads \
-#     && mkdir -p /home/lhuser/reports \
-#     && chown -R lhuser:lhuser /home/lhuser
-
-# Run user as non privileged.
-# USER lhuser
-
-# Add a user and make it a sudo user
-# RUN useradd -m chromeuser &&\
-# sudo adduser chromeuser sudo
-
 RUN mkdir reports
 
 EXPOSE 8080
