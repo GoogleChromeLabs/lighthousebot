@@ -11,16 +11,16 @@ First, get yourself the [Google Cloud SDK](https://cloud.google.com/sdk/).
 Fire up Docker, then run:
 
 ```bash
-./docker_build.sh
+yarn build
 ```
 
 ### Run the container locally
 
-Be sure Docker is running, then run:
+Be sure Docker is running, then start the container's web service:
 
 ```bash
-## Run a new container
-./docker_run.sh
+yarn serve
+# yarn restart is also handy for building + restarting the container.
 ```
 
 ### Testing / Usage
@@ -29,11 +29,11 @@ Be sure Docker is running, then run:
 curl -X POST \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>" \
-  --data '{"format": "json", "url": "https://staging.example.com"}' \
-  https://localhost:8080/ci
+  --data '{"format": "json", "url": "https://example.com"}' \
+  http://localhost:8080/ci
 ```
 
-where `format` is one of `json`, `html`.
+where `format` is `json` or `html`.
 
 ## Deploy to Google App Engine
 
