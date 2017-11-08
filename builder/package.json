@@ -5,7 +5,10 @@
   "license": "Apache-2.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "./docker_build.sh",
+    "restart": "yarn build && yarn serve",
+    "serve": "./docker_run.sh"
   },
   "dependencies": {
     "body-parser": "^1.18.1",

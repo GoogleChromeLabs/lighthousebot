@@ -9,28 +9,64 @@ const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
 // Handler for CI.
-function runLH(url, format = 'html', res, next) {
+function runLH(params, req, res, next) {
+  const url = params.url;
+  const format = params.format || 'html';
+  const log = params.log || req.method === 'GET';
+
   if (!url) {
     res.status(400).send('Please provide a URL.');
     return;
   }
 
-  const file = `report.${Date.now()}.${format}`;
+  const fileName = `report.${Date.now()}.${format}`;
+  const outputPath = `./reports/${fileName}`;
 
-  const args = [`--output-path=${file}`, `--output=${format}`, '--port=9222'];
+  const args = [`--output-path=${outputPath}`, `--output=${format}`, '--port=9222'];
   const child = spawn('lighthouse', [...args, url]);
 
+  if (log) {
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
+
+    res.write(`
+      <style>
+        textarea {
+          font: inherit;
+          width: 100vw;
+          height: 100vh;
+          border: none;
+          outline: none;
+        }
+        </style>
+        <textarea>
+    `);
+  }
+
   child.stderr.on('data', data => {
-    console.log(data.toString());
+    const str = data.toString();
+    if (log) {
+      res.write(str);
+    }
+    console.log(str);
   });
 
   child.on('close', statusCode => {
-    res.sendFile(`/${file}`, {}, err => {
-      if (err) {
-        next(err);
-      }
-      fs.unlink(file);
-    });
+    if (log) {
+      res.write('</textarea>');
+      res.write(`<meta http-equiv="refresh" content="0;URL='/${fileName}'">`);
+      res.end();
+    } else {
+      res.sendFile(`/${outputPath}`, {}, err => {
+        if (err) {
+          next(err);
+        }
+        fs.unlink(outputPath); // delete report
+      });
+    }
   });
 }
 
@@ -80,9 +116,17 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static('reports'));
 
-// app.get('/ci', (req, res, next) => {
-//   runLH(req.query.url, req.query.format, res, next);
-// });
+app.get('/ci', (req, res, next) => {
+  const apiKey = req.query.key;
+  // Require API for get requests.
+  if (!apiKey) {
+    const msg = `Missing API key. Please include the key parameter`;
+    res.status(403).send(`Missing API key. Please include the key parameter`);
+    return;
+  }
+  console.log(`${API_KEY_HEADER}: ${apiKey}`);
+  runLH(req.query, req, res, next);
+});
 
 app.post('/ci', (req, res, next) => {
   // // Require an API key from users.
@@ -95,7 +139,7 @@ app.post('/ci', (req, res, next) => {
 
   console.log(`${API_KEY_HEADER}: ${req.get(API_KEY_HEADER)}`);
 
-  runLH(req.body.url, req.body.format, res, next);
+  runLH(req.body, req, res, next);
 });
 
 app.get('/stream', (req, res, next) => {

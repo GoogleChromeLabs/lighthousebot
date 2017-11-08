@@ -8,10 +8,7 @@ TMP_PROFILE_DIR=$(mktemp -d -t lighthouse.XXXXXXXXXX)
 /etc/init.d/xvfb start
 sleep 1s
 
-su chromeuser /chromeuser-script_nonheadless.sh
-sleep 3s
+su chromeuser ./chromeuser-script_nonheadless.sh
+sleep 2s
 
-# Create directory to write reports to.
-mkdir reports
-
-node /server.js
+node server.js
