@@ -24,22 +24,25 @@ yarn build
 ## Running the container
 
 There are two ways to run the container. One is directly from the command line.
-The other option is to start a web server.
+The other option starts a server and allows you to run Lighthouse as a web service (LaaS).
 
 ### Using the container as a CLI
 
-The container can be run as a CLI, just like using the Lighthouse module. See 
+The container can be from the the CLI just like using the Lighthouse npm module. See 
 Lighthouse docs for [CLI options](https://github.com/GoogleChrome/lighthouse#cli-options).
 
 ```bash
 # Audit example.com. Lighthouse results are printed to stdout.
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com
 
-# Audits example.com and saves JSON results to results.json.
+
+# Audits example.com and saves HTML report to a file.
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --quiet https://example.com > report.html
+
+# Audits example.com and saves JSON results to a file.
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --quiet --output=json https://example.com > report.json
 
-# Print Lighthouse verion.
+# Print Lighthouse version used in the container.
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --version
 ```
 

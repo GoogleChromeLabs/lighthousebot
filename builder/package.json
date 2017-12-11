@@ -1,6 +1,6 @@
 {
   "name": "lighthouse_ci",
-  "description": "A Docker CI server for the Lighthouse",
+  "description": "Lighthouse in Docker",
   "author": "Eric Bidelman <ebidel@>, Cedric Bellet",
   "license": "Apache-2.0",
   "main": "server.js",
@@ -8,7 +8,8 @@
     "start": "node server.js",
     "build": "./docker_build.sh",
     "restart": "yarn build && yarn serve",
-    "serve": "./docker_run.sh"
+    "serve": "./docker_run.sh",
+    "chrome": "docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com --fast --quiet --output=json | node -e \"let f = ''; process.stdin.on('data', d => f += d); process.stdin.on('close', () => console.log(JSON.parse(f).userAgent));\""
   },
   "dependencies": {
     "body-parser": "^1.18.1",
