@@ -186,14 +186,6 @@ curl -X POST \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```
 
-Relevant source:
-
-Contains example Dockerfiles for running Lighthouse using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome) and full Chrome. Both setups us [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node).
-
-- [`builder/Dockerfile.nonheadless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.nonheadless) - Dockerfile for running full Chrome.
-- [`builder/Dockerfile.headless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.headless) - Dockerfile for running headless Chrome.
-- `builder/server.js` - The `/ci` endpoint that runs Lighthouse.
-
 ## Running your own CI server
 
 Want to setup your own Lighthouse instance in a Docker container?
@@ -226,7 +218,7 @@ In your test repo:
 - Run `yarn add --dev https://github.com/ebidel/lighthouse-ci`
 - Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
 your repo.
-
+f
 Notes:
 
 - If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).

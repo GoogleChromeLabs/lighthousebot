@@ -11,7 +11,7 @@ const PORT = 8080;
 // Handler for CI.
 function runLH(params, req, res, next) {
   const url = params.url;
-  const format = params.format || 'html';
+  const format = params.output || params.format || 'html';
   const log = params.log || req.method === 'GET';
 
   if (!url) {
@@ -20,9 +20,15 @@ function runLH(params, req, res, next) {
   }
 
   const fileName = `report.${Date.now()}.${format}`;
-  const outputPath = `./reports/${fileName}`;
+  const outputPath = `./home/chrome/reports/${fileName}`;
 
-  const args = [`--output-path=${outputPath}`, `--output=${format}`, '--port=9222'];
+  const args = [
+    `--output-path=${outputPath}`,
+    `--output=${format}`,
+    '--port=9222',
+    // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
+    `--chrome-flags="--headless"`,
+  ];
   const child = spawn('lighthouse', [...args, url]);
 
   if (log) {
@@ -74,7 +80,7 @@ function runLH(params, req, res, next) {
 // Serve sent event handler for https://lighthouse-ci.appspot.com/try.
 function runLighthouseAsEventStream(req, res, next) {
   const url = req.query.url;
-  const format = req.query.format || 'html';
+  const format = req.query.output || req.query.format || 'html';
 
   if (!url) {
     res.status(400).send('Please provide a URL.');
@@ -91,7 +97,7 @@ function runLighthouseAsEventStream(req, res, next) {
   });
 
   const file = `report.${Date.now()}.${format}`;
-  const fileSavePath = './reports/';
+  const fileSavePath = './home/chrome/reports/';
 
   const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
   const child = spawn('lighthouse', [...args, url]);
@@ -115,7 +121,7 @@ function runLighthouseAsEventStream(req, res, next) {
 
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('reports'));
+app.use(express.static('home/chrome/reports'));
 
 app.get('/ci', (req, res, next) => {
   const apiKey = req.query.key;

@@ -1,14 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 
-export DISPLAY=:1
+# Using full Chrome in Docker requires us to start xvfb and launch our own instance.
+
+/etc/init.d/dbus start
+
+Xvfb :99 -ac -screen 0 1280x1024x24 -nolisten tcp &
+xvfb=$!
+export DISPLAY=:99
 
 TMP_PROFILE_DIR=$(mktemp -d -t lighthouse.XXXXXXXXXX)
 
-/etc/init.d/dbus start
-/etc/init.d/xvfb start
-sleep 1s
+su chrome /chromeuser-script_nonheadless.sh
 
-su chromeuser ./chromeuser-script_nonheadless.sh
-sleep 2s
-
-node server.js
+if [ -z "$1" ]; then
+  npm run start
+else
+  lighthouse --port=9222 --output-path=stdout $@
+fi
