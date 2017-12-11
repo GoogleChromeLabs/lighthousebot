@@ -1,9 +1,10 @@
 node_modules
 .gitignore
 .dockerignore
-Dockerfile
+Dockerfile*
 *-debug.log
 *-error.log
 .git
 .hg
 .svn
+README.md

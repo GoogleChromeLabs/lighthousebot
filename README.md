@@ -218,7 +218,7 @@ In your test repo:
 - Run `yarn add --dev https://github.com/ebidel/lighthouse-ci`
 - Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
 your repo.
-f
+
 Notes:
 
 - If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).
