@@ -1,5 +1,4 @@
 FROM node:8-slim
-#FROM node:9.2-alpine
 
 MAINTAINER Eric Bidelman <ebidel@>
 
