@@ -168,7 +168,7 @@ app.post('/run_on_chrome', async (req, res) => {
   try {
     const headers = {[API_KEY_HEADER]: req.get(API_KEY_HEADER)};
     lhResults = await CI.testOnHeadlessChrome(
-        {format: config.format, url: config.testUrl}, headers);
+        {output: config.output, url: config.testUrl}, headers);
   } catch (err) {
     CI.handleError(err, prInfo);
     res.json(`Error from CI backend. ${err.message}`);

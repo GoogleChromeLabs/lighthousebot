@@ -122,7 +122,7 @@ function run(config) {
     case RUNNERS.chrome: // same as default
     default:
       endpoint = `${CI_HOST}/run_on_chrome`;
-      body = JSON.stringify(Object.assign({format: 'json'}, config));
+      body = JSON.stringify(Object.assign({output: 'json'}, config));
   }
 
   fetch(endpoint, {method: 'POST', body, headers: {

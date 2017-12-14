@@ -182,7 +182,7 @@ REST endpoints:
 curl -X POST \
   -H "Content-Type: application/json" \
   -H "X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>" \
-  --data '{"format": "json", "url": "https://staging.example.com"}' \
+  --data '{"output": "json", "url": "https://staging.example.com"}' \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```
 

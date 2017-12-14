@@ -44,7 +44,7 @@ class LighthouseCI {
     });
 
     // POST https://builder-dot-lighthouse-ci.appspot.com/ci
-    // '{"format": "json", "url": <testUrl>}"'
+    // '{"output": "json", "url": <testUrl>}"'
     return fetch('https://builder-dot-lighthouse-ci.appspot.com/ci', {
       method: 'POST',
       body: JSON.stringify(body),
