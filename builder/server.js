@@ -99,7 +99,13 @@ function runLighthouseAsEventStream(req, res, next) {
   const file = `report.${Date.now()}.${format}`;
   const fileSavePath = './home/chrome/reports/';
 
-  const args = [`--output-path=${fileSavePath + file}`, `--output=${format}`, '--port=9222'];
+  const args = [
+    `--output-path=${fileSavePath + file}`,
+    `--output=${format}`,
+    '--port=9222',
+    // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
+    `--chrome-flags="--headless"`,
+  ];
   const child = spawn('lighthouse', [...args, url]);
 
   let log = '';
