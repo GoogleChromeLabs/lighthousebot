@@ -98,13 +98,13 @@ function resetUI(clearInput=true) {
  */
 function runLighthouse(url = '') {
   // If user inputs domain, make it a full URL.
-  // if (!url.match(/^https?:\/\//)) {
-  //   url = `http://${url}`;
-  //   input.value = url;
-  // }
+  if (!url.match(/^https?:\/\//)) {
+    url = `http://${url}`;
+    input.value = url;
+  }
 
   if (!url.length || !input.validity.valid) {
-    alert('URL is not valid');
+    alert('URL is not valid. Please make sure to use a full URL (e.g. https://www.example.com).');
     return;
   }
 
