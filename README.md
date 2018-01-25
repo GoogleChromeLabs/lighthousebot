@@ -27,7 +27,7 @@ Once you have a key, update Travis settings by adding an `LIGHTHOUSE_API_KEY` en
 
 <img width="875" alt="Travis LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/2837064/32105842-2635de42-bb2a-11e7-983a-921a802d38b3.jpg">
 
-The `runlighthouse.js` script will include your key in requests made to the CI server.
+The `lighthouse-ci` script will include your key in requests made to the CI server.
 
 ### 2. Deploy the PR
 
@@ -46,20 +46,28 @@ after_success:
 
 > **Tip:** Using Google App Engine? Check out [`deploy_pr_gae.sh`](https://github.com/GoogleChrome/chromium-dashboard/blob/master/travis/deploy_pr_gae.sh) which shows how to install the GAE SDK and deploy PR changes programmatically.
 
-### 3. Call runlighthouse.js
+### 3. Call lighthouse-ci
 
 Install the script:
 
     yarn add --dev https://github.com/ebidel/lighthouse-ci
 
-Next, in `.travis.yml` call [`runlighthouse.js`][runlighthouse-link] as the last step in `after_success`:
+Add an NPM script to your `package.json`:
+
+```js
+   "scripts": {
+     "lighthouse": "lighthouse-ci https://staging.example.com"
+   }
+```
+
+Next, in `.travis.yml` call [`yarn run lighthouse"`][runlighthouse-link] as the last step in `after_success`:
 
 ```yml
 install:
   - npm install # make sure to install the deps when Travis runs.
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - node node_modules/lighthouse-ci/runlighthouse.js https://staging.example.com
+  - yarn run lighthouse
 ```
 
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
@@ -77,7 +85,7 @@ a specified value. Just include the `--score` flag:
 ```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - node node_modules/lighthouse-ci/runlighthouse.js --score=96 https://staging.example.com
+  - yarn run lighthouse --score=96
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
@@ -85,10 +93,10 @@ after_success:
 #### Options
 
 ```bash
-$ node runlighthouse.js -h
+$ lighthouse-ci -h
 
 Usage:
-runlighthouse.js [--score=<score>] [--no-comment] [--runner=chrome,wpt] <url>
+lighthouse-ci [--score=<score>] [--no-comment] [--runner=chrome,wpt] <url>
 
 Options:
   --score      Minimum score for the pull request to be considered "passing".
@@ -103,21 +111,21 @@ Options:
 Examples:
 
   Runs Lighthouse and posts a summary of the results.
-    runlighthouse.js https://example.com
+    lighthouse-ci https://example.com
 
   Fails the PR if the score drops below 93. Posts the summary comment.
-    runlighthouse.js --score=93 https://example.com
+    lighthouse-ci --score=93 https://example.com
 
   Runs Lighthouse on WebPageTest. Fails the PR if the score drops below 93.
-    runlighthouse.js --score=93 --runner=wpt --no-comment https://example.com
+    lighthouse-ci --score=93 --runner=wpt --no-comment https://example.com
 ```
 
 ## Running on WebPageTest instead of Chrome
 
-By default, `runlighthouse.js` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
+By default, `lighthouse-ci` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
 
 ```bash
-node node_modules/lighthouse-ci/runlighthouse.js --score=96 --runner=wpt https://staging.example.com
+lighthouse-ci --score=96 --runner=wpt https://staging.example.com
 ```
 
 At the end of testing, your PR will be updated with a link to the WebPageTest results containing the Lighthouse report!
@@ -142,7 +150,7 @@ REST endpoints:
 
 #### Example
 
-**Note:** `runlighthouse.js` does this for you.
+**Note:** `lighthouse-ci` does this for you.
 
 ```
 POST https://lighthouse-ci.appspot.com/run_on_chrome
@@ -176,7 +184,7 @@ REST endpoints:
 
 #### Example
 
-**Note:** `runlighthouse.js` does this for you.
+**Note:** `lighthouse-ci` does this for you.
 
 ```bash
 curl -X POST \
