@@ -60,7 +60,7 @@ Add an NPM script to your `package.json`:
    }
 ```
 
-Next, in `.travis.yml` call [`npm run lh"`][runlighthouse-link] as the last step in `after_success`:
+Next, in `.travis.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
 
 ```yml
 install:
