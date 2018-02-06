@@ -50,7 +50,7 @@ after_success:
 
 Install the script:
 
-    yarn add --dev https://github.com/ebidel/lighthouse-ci
+    npm i --save-dev https://github.com/ebidel/lighthouse-ci
 
 Add an NPM script to your `package.json`:
 
@@ -217,13 +217,13 @@ Initial setup:
 Run the dev server:
 
     cd frontend
-    yarn start
+    npm run start
 
 This will start a web server and use the token in `.oauth_token`. The token is used to update PR status in Github.
 
 In your test repo:
 
-- Run `yarn add --dev https://github.com/ebidel/lighthouse-ci`
+- Run `npm i --save-dev https://github.com/ebidel/lighthouse-ci`
 - Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
 your repo.
 
