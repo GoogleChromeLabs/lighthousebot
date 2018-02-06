@@ -56,18 +56,18 @@ Add an NPM script to your `package.json`:
 
 ```js
    "scripts": {
-     "lighthouse": "lighthouse-ci https://staging.example.com"
+     "lh": "lighthouse-ci"
    }
 ```
 
-Next, in `.travis.yml` call [`yarn run lighthouse"`][runlighthouse-link] as the last step in `after_success`:
+Next, in `.travis.yml` call [`yarn run lh"`][runlighthouse-link] as the last step in `after_success`:
 
 ```yml
 install:
   - npm install # make sure to install the deps when Travis runs.
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - yarn run lighthouse
+  - yarn run lh https://staging.example.com
 ```
 
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
@@ -85,7 +85,7 @@ a specified value. Just include the `--score` flag:
 ```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - yarn run lighthouse --score=96
+  - yarn run lh --score=96 https://staging.example.com
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
