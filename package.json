@@ -6,7 +6,7 @@
   "description": "Lighthouse CI Runner",
   "main": "runlighthouse.js",
   "bin": {
-    "lighthouse-ci": "node runlighthouse.js"
+    "lighthouse-ci": "runlighthouse.js"
   },
   "repository": {
     "type": "git",
