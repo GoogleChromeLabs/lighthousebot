@@ -269,7 +269,7 @@ merges based on a LH score.
 
 The main downside of a Github webhook is that there's no way to include custom
 data in the payload Github sends to the webhook handler. For example, how would
-Ligthhouse know what url to test? With a webhook, the user also has to setup it
+Lighthouse know what url to test? With a webhook, the user also has to setup it
 up and configure it properly.
 
 Future work: Lighthouse CI could define a file that developer includes in their
