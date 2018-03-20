@@ -33,9 +33,10 @@ COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 
 # Add a chrome user and setup home dir.
-RUN groupadd -r chrome && useradd -r -m -g chrome -G audio,video chrome && \
-    mkdir -p /home/chrome/reports && \
-    chown -R chrome:chrome /home/chrome
+RUN groupadd --system chrome && \
+    useradd --system --create-home --gid chrome --groups audio,video chrome && \
+    mkdir --parents /home/chrome/reports && \
+    chown --recursive chrome:chrome /home/chrome
 
 USER chrome
 
