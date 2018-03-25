@@ -1,6 +1,6 @@
 FROM node:8-slim
 
-MAINTAINER Eric Bidelman <ebidel@>
+LABEL maintainer="Eric Bidelman <ebidel@>"
 
 # Install utilities
 RUN apt-get update --fix-missing && apt-get -y upgrade
