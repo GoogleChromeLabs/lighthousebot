@@ -48,5 +48,5 @@ ENV CI=true
 
 EXPOSE 8080
 
-ENTRYPOINT ["dumb-init", "--", "/entrypoint.sh"]
-#CMD ["lighthouse", "--help"]
+#ENTRYPOINT ["dumb-init", "--", "/entrypoint.sh"]
+CMD ["lighthouse", "--help"]
