@@ -133,8 +133,7 @@ app.get('/ci', (req, res, next) => {
   const apiKey = req.query.key;
   // Require API for get requests.
   if (!apiKey) {
-    const msg = `Missing API key. Please include the key parameter`;
-    res.status(403).send(`Missing API key. Please include the key parameter`);
+    res.status(403).send('Missing API key. Please include the key parameter');
     return;
   }
   console.log(`${API_KEY_HEADER}: ${apiKey}`);
