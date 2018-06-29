@@ -95,8 +95,8 @@ class LighthouseCI {
    */
   static getOverallScore(lhResults) {
     // Note: LH 2.9 returned just PWA score for overall score. Keep those
-    // semantics for now.
-    return lhResults.categories.pwa.score * 100;
+    // semantics for now. Try lhr.score first (WPT still uses 2.9).
+    return lhResults.score || (lhResults.categories.pwa.score * 100);
   }
 
   /**
@@ -148,7 +148,7 @@ class LighthouseCI {
   postLighthouseComment(prInfo, lhResults) {
     let rows = '';
     Object.values(lhResults.categories).forEach(cat => {
-      rows += `| ${cat.title} | ${Math.round(cat.score)} |\n`;
+      rows += `| ${cat.title} | ${cat.score} |\n`;
     });
 
     const body = `

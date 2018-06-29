@@ -1,6 +1,6 @@
-runtime: nodejs
-env: flex
+runtime: nodejs8
+#env: flex
 
-automatic_scaling:
-  min_num_instances: 1
-  max_num_instances: 1
+#automatic_scaling:
+#  min_num_instances: 1
+#  max_num_instances: 1

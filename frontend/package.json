@@ -8,7 +8,7 @@
     "start": "OAUTH_TOKEN=`cat .oauth_token` node server.js"
   },
   "engines": {
-    "node": ">=7.7.0"
+    "node": ">=8"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
