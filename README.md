@@ -67,7 +67,7 @@ install:
   - npm install # make sure to install the deps when Travis runs.
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - npm run lh https://staging.example.com
+  - npm run lh -- https://staging.example.com
 ```
 
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
@@ -85,7 +85,7 @@ a specified value. Just include the `--score` flag:
 ```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - npm run lh --score=96 https://staging.example.com
+  - npm run lh -- --score=96 https://staging.example.com
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
