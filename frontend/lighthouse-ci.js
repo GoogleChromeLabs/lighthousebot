@@ -148,7 +148,7 @@ class LighthouseCI {
   postLighthouseComment(prInfo, lhResults) {
     let rows = '';
     Object.values(lhResults.categories).forEach(cat => {
-      rows += `| ${cat.title} | ${cat.score} |\n`;
+      rows += `| ${cat.title} | ${cat.score * 100} |\n`;
     });
 
     const body = `
