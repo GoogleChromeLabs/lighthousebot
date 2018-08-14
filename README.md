@@ -6,7 +6,7 @@ This repo contains the frontend and backend for the Lighthouse CI server.
 
 > Please note: This drop in service is considered **Beta**. There are no SLAs or uptime guarantees. If you're interested in running your own CI server in a Docker container, check out [Running your own CI server](#running-your-own-ci-server).
 
-Lighthouse can be setup as part of your CI on Travis. As new pull requests come in, the **Lighthouse CI tests the changes and reports back the new score**.
+Lighthouse can be setup as part of your CI on **Travis only**. As new pull requests come in, the **Lighthouse CI tests the changes and reports back the new score**.
 
 <img width="700" alt="Run Lighthouse on Github PRs" src="https://user-images.githubusercontent.com/238208/27059055-70ba6e86-4f89-11e7-8ead-932aab0f2634.png">
 
