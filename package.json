@@ -18,10 +18,10 @@
   "homepage": "https://github.com/ebidel/lighthouse-ci#readme",
   "dependencies": {
     "minimist": "^1.2.0",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^2.2.0"
   },
   "devDependencies": {
-    "eslint": "^3.18.0",
-    "eslint-config-google": "^0.8.0"
+    "eslint": "^5.4.0",
+    "eslint-config-google": "^0.9.1"
   }
 }

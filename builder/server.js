@@ -8,14 +8,27 @@ const bodyParser = require('body-parser');
 const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
 
+function validURL(url, res) {
+  if (!url) {
+    res.status(400).send('Please provide a URL.');
+    return false;
+  }
+
+  if (!url.startsWith('http')) {
+    res.status(400).send('URL much start with http.');
+    return false;
+  }
+
+  return true;
+}
+
 // Handler for CI.
 function runLH(params, req, res, next) {
   const url = params.url;
   const format = params.output || params.format || 'html';
   const log = params.log || req.method === 'GET';
 
-  if (!url) {
-    res.status(400).send('Please provide a URL.');
+  if (!validURL(url, res)) {
     return;
   }
 
@@ -82,8 +95,7 @@ function runLighthouseAsEventStream(req, res, next) {
   const url = req.query.url;
   const format = req.query.output || req.query.format || 'html';
 
-  if (!url) {
-    res.status(400).send('Please provide a URL.');
+  if (!validURL(url, res)) {
     return;
   }
 
