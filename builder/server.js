@@ -139,6 +139,17 @@ function runLighthouseAsEventStream(req, res, next) {
 
 const app = express();
 app.use(bodyParser.json());
+
+app.use(function enableCors(req, res, next) {
+  res.set('Access-Control-Allow-Origin', '*');
+
+  // Record GA hit.
+  // const visitor = ua(GA_ACCOUNT, {https: true});
+  // visitor.pageview(req.originalUrl).send();
+
+  next();
+});
+
 app.use(express.static('home/chrome/reports'));
 
 app.get('/ci', (req, res, next) => {
