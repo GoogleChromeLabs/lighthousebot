@@ -25,7 +25,7 @@ class LighthouseCI {
    * @param {!string} token Github OAuth token that has repo:status access.
    */
   constructor(token) {
-    this.github = new Github({debug: false, Promise: Promise});
+    this.github = new Github({debug: false});
     this.github.authenticate({type: 'oauth', token});
   }
 
