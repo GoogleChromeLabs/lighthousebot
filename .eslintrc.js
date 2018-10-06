@@ -4,7 +4,8 @@ module.exports = {
   "extends": ["eslint:recommended", "google"],
   "env": {
     "node": true,
-    "es6": true
+    "es6": true,
+    "browser": true,
   },
   "parserOptions": {
     "ecmaVersion": 8,

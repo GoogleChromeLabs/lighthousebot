@@ -5,17 +5,18 @@
   "license": "Apache-2.0",
   "scripts": {
     "serve": "OAUTH_TOKEN=`cat .oauth_token` PORT=8081 node server.js",
-    "start": "OAUTH_TOKEN=`cat .oauth_token` node server.js"
+    "start": "OAUTH_TOKEN=`cat .oauth_token` node server.js",
+    "lint": "npx eslint ."
   },
   "engines": {
     "node": ">=8"
   },
   "dependencies": {
-    "body-parser": "^1.17.1",
-    "eslint": "^3.19.0",
-    "eslint-config-google": "^0.8.0",
-    "express": "^4.15.2",
-    "github": "^9.2.0",
-    "node-fetch": "^1.6.3"
+    "@octokit/rest": "^15.13.0",
+    "body-parser": "^1.18.3",
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0",
+    "express": "^4.16.3",
+    "node-fetch": "1.7.3"
   }
 }

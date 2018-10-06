@@ -16,12 +16,11 @@
 'use strict';
 
 const fetch = require('node-fetch'); // polyfill
-const Github = require('github');
+const Github = require('@octokit/rest');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
 class LighthouseCI {
-
   /**
    * @param {!string} token Github OAuth token that has repo:status access.
    */
@@ -49,11 +48,10 @@ class LighthouseCI {
       method: 'POST',
       body: JSON.stringify(body),
       headers
-    })
-    .then(resp => resp.json())
-    .catch(err => {
-      throw err;
-    });
+    }).then(resp => resp.json())
+      .catch(err => {
+        throw err;
+      });
   }
 
   /**
