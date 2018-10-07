@@ -39,7 +39,7 @@ app.use(express.static('public', {
 }));
 
 app.get('/', (req, res) => {
-  res.redirect('/try');
+  res.redirect('https://github.com/ebidel/lighthouse-ci');
 });
 
 // Handler pingback result from webpagetest.
