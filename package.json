@@ -1,6 +1,6 @@
 {
   "name": "lighthouse-ci",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Eric Bidelman <ebidel@>",
   "license": "Apache-2.0",
   "description": "Lighthouse CI Runner",

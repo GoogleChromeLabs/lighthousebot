@@ -79,13 +79,14 @@ You can also opt-out of the comment by using the `--no-comment` flag.
 
 #### Failing a PR when it drops your Lighthouse score
 
-Lighthouse CI can prevent PRs from being merged when the overall score falls below
-a specified value. Just include the `--score` flag:
+Lighthouse CI can prevent PRs from being merged when one of the scores falls
+below a specified value. Just include one or more of `--pwa`, `--perf`, `--seo`,
+`--a11y`, or `--bp`:
 
 ```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - npm run lh -- --score=96 https://staging.example.com
+  - npm run lh -- --perf=96 https://staging.example.com
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
@@ -96,11 +97,18 @@ after_success:
 $ lighthouse-ci -h
 
 Usage:
-lighthouse-ci [--score=<score>] [--no-comment] [--runner=chrome,wpt] <url>
+runlighthouse.js [--perf,pwa,seo,a11y,bp=<score>] [--no-comment] [--runner=chrome,wpt] <url>
 
 Options:
-  --score      Minimum score for the pull request to be considered "passing".
-               If omitted, merging the PR will be allowed no matter what the score. [Number]
+  Minimum score values can be pased per category as a way to fail the PR if
+  the thresholds are not met. If you don't provide thresholds, the PR will
+  be mergeable no matter what the scores.
+
+  --pwa        Minimum PWA score for the PR to be considered "passing". [Number]
+  --perf       Minimum performance score for the PR to be considered "passing". [Number]
+  --seo        Minimum seo score for the PR to be considered "passing". [Number]
+  --a11y       Minimum accessiblity score for the PR to be considered "passing". [Number]
+  --bp         Minimum best practices score for the PR to be considered "passing". [Number]
 
   --no-comment Doesn't post a comment to the PR issue summarizing the Lighthouse results. [Boolean]
 
@@ -111,13 +119,16 @@ Options:
 Examples:
 
   Runs Lighthouse and posts a summary of the results.
-    lighthouse-ci https://example.com
+    runlighthouse.js https://example.com
 
-  Fails the PR if the score drops below 93. Posts the summary comment.
-    lighthouse-ci --score=93 https://example.com
+  Fails the PR if the performance score drops below 93. Posts the summary comment.
+    runlighthouse.js --perf=93 https://example.com
 
-  Runs Lighthouse on WebPageTest. Fails the PR if the score drops below 93.
-    lighthouse-ci --score=93 --runner=wpt --no-comment https://example.com
+  Fails the PR if perf score drops below 93 or the PWA score drops below 100. Posts the summary comment.
+    runlighthouse.js --perf=93 --pwa=100 https://example.com
+
+  Runs Lighthouse on WebPageTest. Fails the PR if the perf score drops below 93.
+    runlighthouse.js --perf=93 --runner=wpt --no-comment https://example.com
 ```
 
 ## Running on WebPageTest instead of Chrome
@@ -125,10 +136,70 @@ Examples:
 By default, `lighthouse-ci` runs your PRs through Lighthouse hosted in the cloud. As an alternative, you can test on real devices using the WebPageTest integration:
 
 ```bash
-lighthouse-ci --score=96 --runner=wpt https://staging.example.com
+lighthouse-ci --perf=96 --runner=wpt https://staging.example.com
 ```
 
 At the end of testing, your PR will be updated with a link to the WebPageTest results containing the Lighthouse report!
+
+## Running your own CI server
+
+Want to setup your own Lighthouse instance in a Docker container?
+
+The good news is Docker does most of the work for us! The bulk of getting started is in [Development](#development). That will take you through initial setup and show how to run the CI frontend.
+
+For the backend, see [builder/README.md](https://github.com/ebidel/lighthouse-ci/blob/master/builder/README.md) for building and running the Docker container.
+
+Other changes, to the "Development" section:
+
+- Create a personal OAuth token in https://github.com/settings/tokens. Drop it in `frontend/.oauth_token`.
+- Add a `LIGHTHOUSE_CI_HOST` env variable to Travis settings that points to your own URL. The one where you deploy the Docker container.
+
+## Development
+
+Initial setup:
+
+1. Ask an existing dev for the oauth2 token. If you need to regenerate one, see below.
+- Create `frontend/.oauth_token` and copy in the token value.
+
+Run the dev server:
+
+    cd frontend
+    npm run start
+
+This will start a web server and use the token in `.oauth_token`. The token is used to update PR status in Github.
+
+In your test repo:
+
+- Run `npm i --save-dev https://github.com/ebidel/lighthouse-ci`
+- Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
+your repo.
+
+Notes:
+
+- If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).
+- To make changes to the CI server, you'll probably want to run [ngrok](https://ngrok.com/) so you can test against a local server instead of deploying for each change. In Travis settings,
+add a `LIGHTHOUSE_CI_HOST` env variable that points to your ngrok instance.
+
+##### Generating a new OAuth2 token
+
+If you need to generate a new OAuth token:
+
+1. Sign in to the [lighthousebot](https://github.com/lighthousebot) Github account. (Admins: the credentials are in the usual password tool).
+2. Visit personal access tokens: https://github.com/settings/tokens.
+3. Regenerate the token. **Important**: this invalidates the existing token so other developers will need to be informed.
+4. Update token in `frontend/.oauth_token`.
+
+#### Deploy
+
+By default, these scripts deploy to [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node). If you're running your own CI server, use your own setup :)
+
+Deploy the frontend:
+
+    npm run deploy YYYY-MM-DD frontend
+
+Deploy the CI builder backend:
+
+    npm run deploy YYYY-MM-DD builder
 
 ## Source & Components
 
@@ -159,7 +230,10 @@ X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>
 
 {
   testUrl: "https://staging.example.com",
-  minPassScore: 96,
+  thresholds: {
+    pwa: 100,
+    perf: 96,
+  },
   addComment: true,
   repo: {
     owner: "<REPO_OWNER>",
@@ -193,66 +267,6 @@ curl -X POST \
   --data '{"output": "json", "url": "https://staging.example.com"}' \
   https://builder-dot-lighthouse-ci.appspot.com/ci
 ```
-
-## Running your own CI server
-
-Want to setup your own Lighthouse instance in a Docker container?
-
-The good news is Docker does most of the work for us! The bulk of getting started is in [Development](#development). That will take you through initial setup and show how to run the CI frontend.
-
-For the backend, see [builder/README.md](https://github.com/ebidel/lighthouse-ci/blob/master/builder/README.md) for building and running the Docker container.
-
-Other changes, to the "Development" section:
-
-- Create a personal OAuth token in https://github.com/settings/tokens. Drop it in `frontend/.oauth_token`.
-- Add a `CI_HOST` env variable to Travis settings that points to your own URL. The one where you deploy the Docker container.
-
-## Development
-
-Initial setup:
-
-1. Ask an existing dev for the oauth2 token. If you need to regenerate one, see below.
-- Create `frontend/.oauth_token` and copy in the token value.
-
-Run the dev server:
-
-    cd frontend
-    npm run start
-
-This will start a web server and use the token in `.oauth_token`. The token is used to update PR status in Github.
-
-In your test repo:
-
-- Run `npm i --save-dev https://github.com/ebidel/lighthouse-ci`
-- Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
-your repo.
-
-Notes:
-
-- If you want to make changes to the builder, you'll need [Docker](https://www.docker.com/) and the [GAE Node SDK](https://cloud.google.com/appengine/docs/flexible/nodejs/download).
-- To make changes to the CI server, you'll probably want to run [ngrok](https://ngrok.com/) so you can test against a local server instead of deploying for each change. In Travis settings,
-add a `CI_HOST` env variable that points to your ngrok instance.
-
-##### Generating a new OAuth2 token
-
-If you need to generate a new OAuth token:
-
-1. Sign in to the [lighthousebot](https://github.com/lighthousebot) Github account. (Admins: the credentials are in the usual password tool).
-2. Visit personal access tokens: https://github.com/settings/tokens.
-3. Regenerate the token. **Important**: this invalidates the existing token so other developers will need to be informed.
-4. Update token in `frontend/.oauth_token`.
-
-#### Deploy
-
-By default, these scripts deploy to [Google App Engine Flexible containers](https://cloud.google.com/appengine/docs/flexible/nodejs/) (Node). If you're running your own CI server, use your own setup :)
-
-Deploy the frontend:
-
-    npm run deploy YYYY-MM-DD frontend
-
-Deploy the CI builder backend:
-
-    npm run deploy YYYY-MM-DD builder
 
 ## FAQ
 

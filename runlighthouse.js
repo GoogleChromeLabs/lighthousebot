@@ -20,7 +20,7 @@
 const fetch = require('node-fetch'); // polyfill
 const minimist = require('minimist');
 
-const CI_HOST = process.env.CI_HOST || 'https://lighthouse-ci.appspot.com';
+const CI_HOST = process.env.LIGHTHOUSE_CI_HOST || 'https://lighthouse-ci.appspot.com';
 const API_KEY = process.env.LIGHTHOUSE_API_KEY || process.env.API_KEY;
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
@@ -31,11 +31,18 @@ if (process.env.API_KEY) {
 
 function printUsageAndExit() {
   const usage = `Usage:
-runLighthouse.js [--score=<score>] [--no-comment] [--runner=${Object.keys(RUNNERS)}] <url>
+runlighthouse.js [--perf,pwa,seo,a11y,bp=<score>] [--no-comment] [--runner=${Object.keys(RUNNERS)}] <url>
 
 Options:
-  --score      Minimum score for the pull request to be considered "passing".
-               If omitted, merging the PR will be allowed no matter what the score. [Number]
+  Minimum score values can be pased per category as a way to fail the PR if
+  the thresholds are not met. If you don't provide thresholds, the PR will
+  be mergeable no matter what the scores.
+
+  --pwa        Minimum PWA score for the PR to be considered "passing". [Number]
+  --perf       Minimum performance score for the PR to be considered "passing". [Number]
+  --seo        Minimum seo score for the PR to be considered "passing". [Number]
+  --a11y       Minimum accessiblity score for the PR to be considered "passing". [Number]
+  --bp         Minimum best practices score for the PR to be considered "passing". [Number]
 
   --no-comment Doesn't post a comment to the PR issue summarizing the Lighthouse results. [Boolean]
 
@@ -46,13 +53,16 @@ Options:
 Examples:
 
   Runs Lighthouse and posts a summary of the results.
-    runLighthouse.js https://example.com
+    runlighthouse.js https://example.com
 
-  Fails the PR if the score drops below 93. Posts the summary comment.
-    runLighthouse.js --score=93 https://example.com
+  Fails the PR if the performance score drops below 93. Posts the summary comment.
+    runlighthouse.js --perf=93 https://example.com
 
-  Runs Lighthouse on WebPageTest. Fails the PR if the score drops below 93.
-    runLighthouse.js --score=93 --runner=wpt --no-comment https://example.com`;
+  Fails the PR if perf score drops below 93 or the PWA score drops below 100. Posts the summary comment.
+    runlighthouse.js --perf=93 --pwa=100 https://example.com
+
+  Runs Lighthouse on WebPageTest. Fails the PR if the perf score drops below 93.
+    runlighthouse.js --perf=93 --runner=wpt --no-comment https://example.com`;
 
   console.log(usage);
   process.exit(1);
@@ -82,9 +92,26 @@ function getConfig() {
   }
 
   config.addComment = argv.comment;
-  config.minPassScore = Number(argv.score);
-  if (!config.addComment && !config.minPassScore) {
-    console.log('Please provide a --score when using --no-comment.');
+  config.thresholds = {};
+  if ('perf' in argv) {
+    config.thresholds.performance = Number(argv.perf);
+  }
+  if ('pwa' in argv) {
+    config.thresholds.pwa = Number(argv.pwa);
+  }
+  if ('seo' in argv) {
+    config.thresholds.seo = Number(argv.seo);
+  }
+  if ('a11y' in argv) {
+    config.thresholds.accessibility = Number(argv.a11y);
+  }
+  if ('bp' in argv) {
+    config.thresholds['best-practices'] = Number(argv.bp);
+  }
+
+  if (!config.addComment && !Object.keys(config.thresholds).length) {
+    console.log(`Please provide a threshold score for at least one category
+      (pwa,perf,seo,a11y) when using --no-comment.]\n`);
     printUsageAndExit();
   }
 
@@ -103,6 +130,10 @@ function getConfig() {
   };
 
   const repoSlug = process.env.TRAVIS_PULL_REQUEST_SLUG;
+  if (!repoSlug) {
+    throw new Error('This script can only be run on Travis PR requests.');
+  }
+
   config.repo = {
     owner: repoSlug.split('/')[0],
     name: repoSlug.split('/')[1]
@@ -139,7 +170,10 @@ function run(config) {
           `Started Lighthouse run on WebPageTest: ${json.data.target_url}`);
         return;
       }
-      console.log('Lighthouse CI score:', json.score);
+      console.log('New Lighthouse scores:');
+      for (const [cat, score] of Object.entries(json)) {
+        console.log(`${cat} score:`, score);
+      }
     })
     .catch(err => {
       console.log('Lighthouse CI failed', err);

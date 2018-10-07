@@ -87,14 +87,14 @@ class LighthouseCI {
   }
 
   /**
-   * Calculates an overall score across all sub audits.
-   * @param {!Object} lhResults Lighthouse results object.
-   * @return {!number}
+   * Returns the scores for each category.
+   * @param {!Object} lhr Lighthouse results object.
+   * @return {!Array<!Object<string, number>>}
    */
-  static getOverallScore(lhResults) {
-    // Note: LH 2.9 returned just PWA score for overall score. Keep those
-    // semantics for now. Try lhr.score first (WPT still uses 2.9).
-    return lhResults.score || (lhResults.categories.pwa.score * 100);
+  static getOverallScores(lhr) {
+    return Object.values(lhr.categories).map(cat => {
+      return {[cat]: cat.score * 100};
+    });
   }
 
   /**
@@ -113,19 +113,27 @@ class LighthouseCI {
 
   /**
    * Updates pass/fail state of PR.
-   * @param {!Object} lhResults Lighthouse results object.
-   * @param {!{minPassScore: number}} config
+   * @param {!Object} lhr Lighthouse results object.
+   * @param {!Object<string, number>} thresholds Minimum scores per category.
    * @param {!Object} opts Options to set the status with.
    * @return {!Promise<number>} Overall lighthouse score.
    */
-  assignPassFailToPR(lhResults, config, opts) {
-    const score = Math.round(LighthouseCI.getOverallScore(lhResults));
-    const passing = config.minPassScore <= score;
+  assignPassFailToPR(lhr, thresholds, opts) {
+    const scores = LighthouseCI.getOverallScores(lhr);
 
-    let description = `Failed. This PR drops your score to ${score}/100 ` +
-                      `(required ${config.minPassScore}+).`;
+    let passing = true;
+    const scoresStr = [];
+    for (const [cat, minScore] of Object.entries(thresholds)) {
+      const score = Math.round(scores[cat]);
+      if (minScore > score) {
+        passing = false;
+      }
+      scoresStr.push(`${cat}:${score}`);
+    }
+
+    let description = `Failed, scores fell. Required ${scoresStr.join(',')}.`;
     if (passing) {
-      description = `Passed. Lighthouse score will be ${score}/100.`;
+      description = 'Passed. Lighthouse scores meet thresholds.';
     }
 
     const status = Object.assign({
@@ -134,18 +142,18 @@ class LighthouseCI {
     }, opts);
 
     // eslint-disable-next-line no-unused-vars
-    return this.updateGithubStatus(status).then(status => score);
+    return this.updateGithubStatus(status).then(status => scores);
   }
 
   /**
    * Posts a comment to the PR with the latest Lighthouse scores.
    * @param {!{owner: string, repo: string, number: number}} prInfo
-   * @param {!Object} lhResults Lighthouse results object.
+   * @param {!Object} lhr Lighthouse results object.
    * @return {!Promise<number>} Lighthouse score.
    */
-  postLighthouseComment(prInfo, lhResults) {
+  postLighthouseComment(prInfo, lhr) {
     let rows = '';
-    Object.values(lhResults.categories).forEach(cat => {
+    Object.values(lhr.categories).forEach(cat => {
       rows += `| ${cat.title} | ${cat.score * 100} |\n`;
     });
 
@@ -156,12 +164,12 @@ Updated [Lighthouse](https://developers.google.com/web/tools/lighthouse/) report
 | ------------- | ------------- |
 ${rows}
 
-_Tested with Lighthouse version: ${lhResults.lighthouseVersion}_`;
+_Tested with Lighthouse version: ${lhr.lighthouseVersion}_`;
 
-    const score = LighthouseCI.getOverallScore(lhResults);
+    const scores = LighthouseCI.getOverallScores(lhr);
 
     // eslint-disable-next-line no-unused-vars
-    return this.github.issues.createComment(Object.assign({body}, prInfo)).then(status => score);
+    return this.github.issues.createComment(Object.assign({body}, prInfo)).then(status => scores);
   }
 }
 
