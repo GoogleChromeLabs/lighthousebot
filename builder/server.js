@@ -89,7 +89,12 @@ function runLH(params, req, res, next) {
         if (err) {
           next(err);
         }
-        fs.unlink(outputPath); // delete report
+        // delete report
+        fs.unlink(outputPath, err => {
+          if (err) {
+            next(err);
+          }
+        });
       });
     }
   });
