@@ -86,7 +86,7 @@ below a specified value. Just include one or more of `--pwa`, `--perf`, `--seo`,
 ```yml
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
-  - npm run lh -- --perf=96 https://staging.example.com
+  - npm run lh -- --perf=96 --pwa=100 https://staging.example.com
 ```
 
 <img width="779" src="https://user-images.githubusercontent.com/238208/46586467-e93c8300-ca33-11e8-83ac-401b23227eb0.png">
