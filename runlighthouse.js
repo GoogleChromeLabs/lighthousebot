@@ -25,7 +25,8 @@ const API_KEY = process.env.LIGHTHOUSE_API_KEY || process.env.API_KEY;
 const RUNNERS = {chrome: 'chrome', wpt: 'wpt'};
 
 if (process.env.API_KEY) {
-  console.log('Warning: The environment variable API_KEY is deprecated. Please use LIGHTHOUSE_API_KEY instead.');
+  console.log(`Warning: The environment variable API_KEY is deprecated.
+    Please use LIGHTHOUSE_API_KEY instead.`);
 }
 
 function printUsageAndExit() {
@@ -91,7 +92,7 @@ function getConfig() {
   const possibleRunners = Object.keys(RUNNERS);
   if (!possibleRunners.includes(config.runner)) {
     console.log(
-        `Unknown runner "${config.runner}". Options: ${possibleRunners}`);
+      `Unknown runner "${config.runner}". Options: ${possibleRunners}`);
     printUsageAndExit();
   }
   console.log(`Using runner: ${config.runner}`);
@@ -131,19 +132,19 @@ function run(config) {
     'Content-Type': 'application/json',
     'X-API-KEY': API_KEY
   }})
-  .then(resp => resp.json())
-  .then(json => {
-    if (config.runner === RUNNERS.wpt) {
-      console.log(
+    .then(resp => resp.json())
+    .then(json => {
+      if (config.runner === RUNNERS.wpt) {
+        console.log(
           `Started Lighthouse run on WebPageTest: ${json.data.target_url}`);
-      return;
-    }
-    console.log('Lighthouse CI score:', json.score);
-  })
-  .catch(err => {
-    console.log('Lighthouse CI failed', err);
-    process.exit(1);
-  });
+        return;
+      }
+      console.log('Lighthouse CI score:', json.score);
+    })
+    .catch(err => {
+      console.log('Lighthouse CI failed', err);
+      process.exit(1);
+    });
 }
 
 // Run LH if this is a PR.

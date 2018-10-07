@@ -248,11 +248,11 @@ By default, these scripts deploy to [Google App Engine Flexible containers](http
 
 Deploy the frontend:
 
-    ./deploy.sh YYYY-MM-DD frontend
+    npm run deploy YYYY-MM-DD frontend
 
 Deploy the CI builder backend:
 
-    ./deploy.sh YYYY-MM-DD builder
+    npm run deploy YYYY-MM-DD builder
 
 ## FAQ
 

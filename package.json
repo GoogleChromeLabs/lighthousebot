@@ -4,10 +4,6 @@
   "author": "Eric Bidelman <ebidel@>",
   "license": "Apache-2.0",
   "description": "Lighthouse CI Runner",
-  "main": "runlighthouse.js",
-  "bin": {
-    "lighthouse-ci": "runlighthouse.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ebidel/lighthouse-ci.git"
@@ -16,6 +12,13 @@
     "url": "https://github.com/ebidel/lighthouse-ci/issues"
   },
   "homepage": "https://github.com/ebidel/lighthouse-ci#readme",
+  "main": "runlighthouse.js",
+  "bin": {
+    "lighthouse-ci": "runlighthouse.js"
+  },
+  "scripts": {
+    "deploy": "./deploy.sh"
+  },
   "dependencies": {
     "minimist": "^1.2.0",
     "node-fetch": "^2.2.0"
