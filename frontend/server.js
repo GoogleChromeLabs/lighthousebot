@@ -177,6 +177,14 @@ app.post('/run_on_chrome', async (req, res) => {
   }
 
   try {
+    // Show deprecation message for anyone still using --score flag.
+    if ('minPassScore' in config) {
+      CI.handleError(new Error('--score flag is not longer supported. See docs.'), prInfo);
+      res.json(`--score flag has been removed in favor of a threshold score for each category.
+               Please see https://github.com/ebidel/lighthouse-ci#failing-a-pr-when-it-drops-your-lighthouse-score`);
+      return;
+    }
+
     // Assign pass/fail to PR if a min score is provided.
     if (Object.keys(config.thresholds).length) {
       await CI.assignPassFailToPR(lhr, config.thresholds, Object.assign({
