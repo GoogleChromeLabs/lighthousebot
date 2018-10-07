@@ -7,9 +7,9 @@ health_check:
 
 automatic_scaling:
   min_num_instances: 1
-  max_num_instances: 1
+  max_num_instances: 5
 
 resources:
-  cpu: 2
-  memory_gb: 7.5
+  cpu: 4
+  memory_gb: 16
   disk_size_gb: 10
