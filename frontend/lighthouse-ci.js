@@ -89,12 +89,15 @@ class LighthouseCI {
   /**
    * Returns the scores for each category.
    * @param {!Object} lhr Lighthouse results object.
-   * @return {!Array<!Object<string, number>>}
+   * @return {!Object<string, number>>}
    */
   static getOverallScores(lhr) {
-    return Object.values(lhr.categories).map(cat => {
-      return {[cat.id]: cat.score * 100};
-    });
+    const cats = Object.keys(lhr.categories);
+    const obj = {};
+    for (const cat of cats) {
+      obj[cat] = lhr.categories[cat].score * 100;
+    }
+    return obj;
   }
 
   /**
@@ -120,19 +123,21 @@ class LighthouseCI {
    */
   assignPassFailToPR(lhr, thresholds, opts) {
     const scores = LighthouseCI.getOverallScores(lhr);
-console.log(scores);
+
     let passing = true;
     const scoresStr = [];
-    for (const [cat, minScore] of Object.entries(thresholds)) {
-      const score = Math.round(scores[cat]);
-console.log(minScore, score);
-      if (minScore > score) {
-        passing = false;
+
+    for (const [cat, score] of Object.entries(scores)) {
+      if (cat in thresholds) {
+        const minScore = thresholds[cat];
+        if (minScore > Math.round(score)) {
+          passing = false;
+        }
+        scoresStr.push(`${cat}:${minScore}`);
       }
-      scoresStr.push(`${cat}:${score}`);
     }
 
-    let description = `Failed, scores fell. Required ${scoresStr.join(',')}.`;
+    let description = `Failed. Required scores: ${scoresStr.join(',')}.`;
     if (passing) {
       description = 'Passed. Lighthouse scores meet thresholds.';
     }
@@ -150,19 +155,21 @@ console.log(minScore, score);
    * Posts a comment to the PR with the latest Lighthouse scores.
    * @param {!{owner: string, repo: string, number: number}} prInfo
    * @param {!Object} lhr Lighthouse results object.
-   * @return {!Promise<number>} Lighthouse score.
+   * @param {!Object<string, number>} thresholds Minimum scores per category.
+   * @return {!Promise<!Object<string, number>} Lighthouse scores.
    */
-  postLighthouseComment(prInfo, lhr) {
+  postLighthouseComment(prInfo, lhr, thresholds) {
     let rows = '';
     Object.values(lhr.categories).forEach(cat => {
-      rows += `| ${cat.title} | ${cat.score * 100} |\n`;
+      const threshold = thresholds[cat.id] || '-';
+      rows += `| ${cat.title} | ${cat.score * 100} | ${threshold} \n`;
     });
 
     const body = `
 Updated [Lighthouse](https://developers.google.com/web/tools/lighthouse/) report for the changes in this PR:
 
-| Category  | Score |
-| ------------- | ------------- |
+| Category | New score | Required threshold |
+| ------------- | ------------- | ------------- |
 ${rows}
 
 _Tested with Lighthouse version: ${lhr.lighthouseVersion}_`;

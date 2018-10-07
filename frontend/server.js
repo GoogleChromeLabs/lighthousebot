@@ -81,7 +81,7 @@ app.get('/wpt_ping', async (req, res) => {
     // Post comment on issue with updated LH scores.
     if (config.addComment) {
       try {
-        await CI.postLighthouseComment(prInfo, lhr);
+        await CI.postLighthouseComment(prInfo, lhr, config.thresholds);
       } catch (err) {
         res.json('Error posting Lighthouse comment to PR.');
       }
@@ -195,7 +195,7 @@ app.post('/run_on_chrome', async (req, res) => {
   // Post comment on issue with updated LH scores.
   if (config.addComment) {
     try {
-      await CI.postLighthouseComment(prInfo, lhr);
+      await CI.postLighthouseComment(prInfo, lhr, config.thresholds);
     } catch (err) {
       res.json('Error posting Lighthouse comment to PR.');
     }
