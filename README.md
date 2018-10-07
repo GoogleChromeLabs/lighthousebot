@@ -73,7 +73,7 @@ after_success:
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
 request containing the updated scores:
 
-<img width="779" alt="Lighthouse Github comment" src="https://user-images.githubusercontent.com/238208/27057277-5282fcca-4f80-11e7-8bbe-73117f0768d0.png">
+<img width="779" alt="Lighthouse Github comment" src="https://user-images.githubusercontent.com/238208/46586467-e93c8300-ca33-11e8-83ac-401b23227eb0.png">
 
 You can also opt-out of the comment by using the `--no-comment` flag.
 
@@ -89,7 +89,7 @@ after_success:
   - npm run lh -- --perf=96 https://staging.example.com
 ```
 
-<img width="779" src="https://user-images.githubusercontent.com/238208/26909890-979b29fc-4bb8-11e7-989d-7206a9eb9c32.png">
+<img width="779" src="https://user-images.githubusercontent.com/238208/46586467-e93c8300-ca33-11e8-83ac-401b23227eb0.png">
 
 #### Options
 
