@@ -171,9 +171,7 @@ function run(config) {
         return;
       }
       console.log('New Lighthouse scores:');
-      for (const [cat, score] of Object.entries(json)) {
-        console.log(`${cat} score:`, score);
-      }
+      console.log(JSON.stringify(json));
     })
     .catch(err => {
       console.log('Lighthouse CI failed', err);

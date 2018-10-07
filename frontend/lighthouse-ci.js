@@ -93,7 +93,7 @@ class LighthouseCI {
    */
   static getOverallScores(lhr) {
     return Object.values(lhr.categories).map(cat => {
-      return {[cat]: cat.score * 100};
+      return {[cat.id]: cat.score * 100};
     });
   }
 
@@ -120,11 +120,12 @@ class LighthouseCI {
    */
   assignPassFailToPR(lhr, thresholds, opts) {
     const scores = LighthouseCI.getOverallScores(lhr);
-
+console.log(scores);
     let passing = true;
     const scoresStr = [];
     for (const [cat, minScore] of Object.entries(thresholds)) {
       const score = Math.round(scores[cat]);
+console.log(minScore, score);
       if (minScore > score) {
         passing = false;
       }
