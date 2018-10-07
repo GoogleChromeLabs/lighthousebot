@@ -73,7 +73,7 @@ after_success:
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
 request containing the updated scores:
 
-<img width="779" alt="Lighthouse Github comment" src="https://user-images.githubusercontent.com/238208/46586471-f6597200-ca33-11e8-83f0-14032fcb3566.png">
+<img width="779" alt="Lighthouse Github comment" src="https://user-images.githubusercontent.com/238208/46586553-dfffe600-ca34-11e8-9eea-3846b41a4360.png">
 
 You can also opt-out of the comment by using the `--no-comment` flag.
 
