@@ -118,7 +118,9 @@
     const source = new EventSource(endpoint);
 
     source.addEventListener('message', e => {
-      if (e.data.startsWith('done')) {
+      if (e.data.startsWith('ERROR')) {
+        source.close();
+      } else if (e.data.startsWith('done')) {
         source.close();
 
         let url = e.data.split(' ')[1];

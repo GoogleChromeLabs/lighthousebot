@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 
 const API_KEY_HEADER = 'X-API-KEY';
 const PORT = 8080;
+const REPORTS_DIR = './home/chrome/reports';
 
 function validURL(url, res) {
   if (!url) {
@@ -22,6 +23,16 @@ function validURL(url, res) {
   return true;
 }
 
+function getDefaultArgs(outputPath, format) {
+  return [
+    `--output-path=${outputPath}`,
+    `--output=${format}`,
+    '--port=0', // choose random port every time so we launch a new instance of Chrome.
+    // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
+    '--chrome-flags="--headless"',
+  ];
+}
+
 // Handler for CI.
 function runLH(params, req, res, next) {
   const url = params.url;
@@ -33,15 +44,9 @@ function runLH(params, req, res, next) {
   }
 
   const fileName = `report.${Date.now()}.${format}`;
-  const outputPath = `./home/chrome/reports/${fileName}`;
+  const outputPath = `${REPORTS_DIR}/${fileName}`;
+  const args = getDefaultArgs(outputPath, format);
 
-  const args = [
-    `--output-path=${outputPath}`,
-    `--output=${format}`,
-    '--port=9222',
-    // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
-    `--chrome-flags="--headless"`,
-  ];
   const child = spawn('lighthouse', [...args, url]);
 
   if (log) {
@@ -108,16 +113,10 @@ function runLighthouseAsEventStream(req, res, next) {
     'X-Accel-Buffering': 'no' // Forces Flex App Engine to keep connection open for SSE.
   });
 
-  const file = `report.${Date.now()}.${format}`;
-  const fileSavePath = './home/chrome/reports/';
+  const fileName = `report.${Date.now()}.${format}`;
+  const outputPath = `./${REPORTS_DIR}/${fileName}`;
+  const args = getDefaultArgs(outputPath, format);
 
-  const args = [
-    `--output-path=${fileSavePath + file}`,
-    `--output=${format}`,
-    '--port=9222',
-    // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
-    `--chrome-flags="--headless"`,
-  ];
   const child = spawn('lighthouse', [...args, url]);
 
   let log = '';
@@ -129,8 +128,13 @@ function runLighthouseAsEventStream(req, res, next) {
   });
 
   child.on('close', statusCode => {
-    const serverOrigin = `https://${req.host}/`;
-    res.write(`data: done ${serverOrigin + file}\n\n`);
+    if (log.match(/Error: /gm)) {
+      res.write(`data: ERROR\n\n`);
+    } else {
+      const serverOrigin = `https://${req.hostname}/`;
+      res.write(`data: done ${serverOrigin + fileName}\n\n`);
+    }
+
     res.status(410).end();
     console.log(log);
     log = '';
@@ -150,7 +154,7 @@ app.use(function enableCors(req, res, next) {
   next();
 });
 
-app.use(express.static('home/chrome/reports'));
+app.use(express.static(REPORTS_DIR));
 
 app.get('/ci', (req, res, next) => {
   const apiKey = req.query.key;
