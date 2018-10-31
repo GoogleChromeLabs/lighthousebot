@@ -278,3 +278,16 @@ data `{minLighthouseScore: 96, testUrl: 'https://staging.example.com'}`. However
 this requires work from the developer.
 
 [runlighthouse-link]: https://github.com/ebidel/lighthouse-ci/blob/master/runlighthouse.js
+
+## Esri build instructions
+
+1. cd builder
+1. `docker login`
+1. `docker build .` (build from this (.) directory).
+  This will output a hash at the end of the output.
+1. `docker tag <the hash> esridc/lighthouse:<version>`
+1. `docker tag <the hash> esridc/lighthouse:latest`
+  This pushes it to our repo in org in dockerhub, our repo (lighthouse), tagging it with the version number and 'latest' 
+1. `docker push esridc/lighthouse:<version>`
+1. `docker push esridc/lighthouse:latest`
+
