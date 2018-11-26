@@ -136,7 +136,9 @@ app.post('/run_on_wpt', async (req, res) => {
 
 // Handler to start Lighthouse run on Chrome.
 app.post('/run_on_chrome', async (req, res) => {
-  const config = Object.assign({}, req.body);
+  const config = Object.assign({
+    output: 'json'
+  }, req.body);
 
   const prInfo = {
     repo: config.repo.name,
