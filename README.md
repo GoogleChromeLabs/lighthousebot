@@ -18,6 +18,18 @@ To audit pull requests, do the following:
 
 First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue as the little Lighthouse icon.
 
+#### Install the script
+
+    npm i --save-dev https://github.com/ebidel/lighthouse-ci
+
+Add an NPM script to your `package.json`:
+
+```js
+"scripts": {
+  "lh": "lighthouse-ci"
+}
+```
+
 #### Get an API Key
 
 [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will eventually be
@@ -48,19 +60,7 @@ after_success:
 
 ### 3. Call lighthouse-ci
 
-Install the script:
-
-    npm i --save-dev https://github.com/ebidel/lighthouse-ci
-
-Add an NPM script to your `package.json`:
-
-```js
-"scripts": {
-  "lh": "lighthouse-ci"
-}
-```
-
-Next, in `.travis.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
+If you're deploying your site through Travis; in `.travis.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
 
 ```yml
 install:
@@ -68,6 +68,16 @@ install:
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
   - npm run lh -- https://staging.example.com
+```
+
+If you've deployed your site through another service and just want to run lighthouse tests [as a job](https://docs.travis-ci.com/user/conditional-builds-stages-jobs/): 
+
+```yml
+jobs:
+  include:
+    - stage: lighthouse
+      if: type = api # Only run this job when Travis is triggered via API
+      script: npm run lh https://staging.example.com
 ```
 
 When Lighthouse is done auditing the URL, the CI will post a comment to the pull
