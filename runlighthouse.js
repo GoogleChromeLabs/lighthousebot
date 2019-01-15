@@ -93,7 +93,7 @@ function getPrInfoFromApi() {
 
       throw error;
     })
-    .then(({ branch, slug, owner }) =>
+    .then(({branch, slug, owner}) =>
       fetch(`https://api.github.com/repos/${slug}/pulls?state=open&head=${owner}:${branch}`)
         .then(resp => resp.json())
         .then(pulls => {
@@ -116,11 +116,11 @@ function getRepoSlugFromFile() {
   if (url.startsWith('http')) {
     const parts = url.split('://').pop().split('/');
 
-    // returns ebidel/lighthouse-ci from https://github.com/ebidel/lighthouse-ci.git
+    // returns owner/repo from https://github.com/owner/repo.git
     return parts.slice(parts.length - 2).join('/').slice(0, -4);
   }
 
-  // returns ebidel/lighthouse-ci from git@github.com:ebidel/lighthouse-ci.git
+  // returns owner/repo from git@github.com:owner/repo.git
   return url.slice(url.lastIndexOf(':') + 1).slice(0, -4);
 }
 
@@ -131,7 +131,7 @@ function getRepoSlugFromFile() {
 function getRepoInfoFromSlug(slug) {
   return {
     owner: slug.split('/')[0],
-    name: slug.split('/')[1]
+    name: slug.split('/')[1],
   };
 }
 
