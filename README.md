@@ -109,7 +109,7 @@ Options:
   --pwa        Minimum PWA score for the PR to be considered "passing". [Number]
   --perf       Minimum performance score for the PR to be considered "passing". [Number]
   --seo        Minimum seo score for the PR to be considered "passing". [Number]
-  --a11y       Minimum accessiblity score for the PR to be considered "passing". [Number]
+  --a11y       Minimum accessibility score for the PR to be considered "passing". [Number]
   --bp         Minimum best practices score for the PR to be considered "passing". [Number]
 
   --no-comment Doesn't post a comment to the PR issue summarizing the Lighthouse results. [Boolean]
