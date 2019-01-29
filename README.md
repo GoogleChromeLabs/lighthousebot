@@ -102,7 +102,7 @@ Usage:
 runlighthouse.js [--perf,pwa,seo,a11y,bp=<score>] [--no-comment] [--runner=chrome,wpt] <url>
 
 Options:
-  Minimum score values can be pased per category as a way to fail the PR if
+  Minimum score values can be passed per category as a way to fail the PR if
   the thresholds are not met. If you don't provide thresholds, the PR will
   be mergeable no matter what the scores.
 
