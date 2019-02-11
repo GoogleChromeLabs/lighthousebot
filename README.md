@@ -52,7 +52,7 @@ after_success:
 
 Install the script:
 
-    npm i --save-dev https://github.com/ebidel/lighthousebot
+    npm i --save-dev https://github.com/GoogleChromeLabs/lighthousebot
 
 Add an NPM script to your `package.json`:
 
@@ -149,7 +149,7 @@ Want to setup your own Lighthouse instance in a Docker container?
 
 The good news is Docker does most of the work for us! The bulk of getting started is in [Development](#development). That will take you through initial setup and show how to run the CI frontend.
 
-For the backend, see [builder/README.md](https://github.com/ebidel/lighthousebot/blob/master/builder/README.md) for building and running the Docker container.
+For the backend, see [builder/README.md](https://github.com/GoogleChromeLabs/lighthousebot/blob/master/builder/README.md) for building and running the Docker container.
 
 Other changes, to the "Development" section:
 
@@ -172,7 +172,7 @@ This will start a web server and use the token in `.oauth_token`. The token is u
 
 In your test repo:
 
-- Run `npm i --save-dev https://github.com/ebidel/lighthousebot`
+- Run `npm i --save-dev https://github.com/GoogleChromeLabs/lighthousebot`
 - Follow the steps in [Auditing Github Pull Requests](#auditing-github-pull-requests) for setting up
 your repo.
 
@@ -250,7 +250,7 @@ X-API-KEY: <YOUR_LIGHTHOUSE_API_KEY>
 
 Relevant source:
 
-- [`frontend/server.js`](https://github.com/ebidel/lighthousebot/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR.
+- [`frontend/server.js`](https://github.com/GoogleChromeLabs/lighthousebot/blob/master/frontend/server.js) - server which accepts Github pull requests and updates the status of your PR.
 
 ### CI backend (builder)
 > Server that runs Lighthouse against a URL, using Chrome.
@@ -293,4 +293,4 @@ repo. The bot's endpoint could pull a `.lighthouse_ci` file that includes meta
 data `{minLighthouseScore: 96, testUrl: 'https://staging.example.com'}`. However,
 this requires work from the developer.
 
-[runlighthouse-link]: https://github.com/ebidel/lighthousebot/blob/master/runlighthouse.js
+[runlighthouse-link]: https://github.com/GoogleChromeLabs/lighthousebot/blob/master/runlighthouse.js
