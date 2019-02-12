@@ -37,10 +37,10 @@ docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com
 
 
 # Audits example.com and saves HTML report to a file.
-docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --quiet https://example.com > report.html
+docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com --quiet > report.html
 
 # Audits example.com and saves JSON results to a file.
-docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --quiet --output=json https://example.com > report.json
+docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com --quiet --output=json > report.json
 
 # Print Lighthouse version used in the container.
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --version
