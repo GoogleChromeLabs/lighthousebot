@@ -16,7 +16,7 @@ function validURL(url, res) {
   }
 
   if (!url.startsWith('http')) {
-    res.status(400).send('URL much start with http.');
+    res.status(400).send('URL must start with http.');
     return false;
   }
 
