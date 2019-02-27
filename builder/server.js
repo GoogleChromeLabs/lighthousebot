@@ -27,6 +27,10 @@ function getDefaultArgs(outputPath, format) {
   return [
     `--output-path=${outputPath}`,
     `--output=${format}`,
+    // Dicey to use port=0 to launch a new instance of Chrome per invocation
+    // of LH. On Linux, eventually Chrome Launcher begins to fail.
+    // Root is https://github.com/GoogleChrome/chrome-launcher/issues/6.
+    // '--port=9222',
     '--port=0', // choose random port every time so we launch a new instance of Chrome.
     // Note: this is a noop when using Dockerfile.nonheadless b/c Chrome is already launched.
     '--chrome-flags="--headless"',
@@ -48,6 +52,8 @@ function runLH(params, req, res, next) {
   const args = getDefaultArgs(outputPath, format);
 
   const child = spawn('lighthouse', [...args, url]);
+  child.stderr.pipe(process.stderr);
+  child.stdout.pipe(process.stdout);
 
   if (log) {
     res.writeHead(200, {
@@ -76,7 +82,6 @@ function runLH(params, req, res, next) {
     if (log) {
       res.write(str);
     }
-    console.log(str);
   });
 
   child.on('close', statusCode => {
@@ -123,8 +128,16 @@ function runLighthouseAsEventStream(req, res, next) {
   const args = getDefaultArgs(outputPath, format);
 
   const child = spawn('lighthouse', [...args, url]);
+  // console.log('pid', child.pid);
+
+  child.stderr.pipe(process.stderr);
+  child.stdout.pipe(process.stdout);
 
   let log = '';
+
+  // child.on('exit', (statusCode, signal) => {
+  //   console.log(statusCode, signal);
+  // });
 
   child.stderr.on('data', data => {
     const str = data.toString();
@@ -141,7 +154,6 @@ function runLighthouseAsEventStream(req, res, next) {
     }
 
     res.status(410).end();
-    console.log(log);
     log = '';
   });
 }
