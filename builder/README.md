@@ -9,7 +9,7 @@ Main source files:
 
 - [`Dockerfile`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile) - Dockerfile for running Lighthouse using headless Chrome.
 - [`Dockerfile.nonheadless`](https://github.com/ebidel/lighthouse-ci/blob/master/builder/Dockerfile.nonheadless) - Dockerfile for running Lighthouse using full Chrome.
-- `server.js` - The server implementation for the `/ci` endpoint. See [Using the container as a web service](##using-the-container-as-a-cli).
+- `server.js` - The server implementation for the `/ci` endpoint. See [Using the container as a web service](#using-the-container-as-a-cli).
 
 ## Build it
 
