@@ -18,7 +18,8 @@
   },
   "scripts": {
     "deploy": "./deploy.sh",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "minimist": "^1.2.0",

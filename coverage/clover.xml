@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1562608544813" clover="3.2.0">
+  <project timestamp="1562608544814" name="All files">
+    <metrics statements="15" coveredstatements="15" conditionals="10" coveredconditionals="10" methods="3" coveredmethods="3" elements="28" coveredelements="28" complexity="0" loc="15" ncloc="15" packages="1" files="1" classes="1"/>
+    <file name="envHelpers.js" path="/home/erez/Documents/github/side_projects/serverless/lighthousebot/envHelpers.js">
+      <metrics statements="15" coveredstatements="15" conditionals="10" coveredconditionals="10" methods="3" coveredmethods="3"/>
+      <line num="4" count="4" type="cond" truecount="2" falsecount="0"/>
+      <line num="9" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="10" count="1" type="stmt"/>
+      <line num="17" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="19" count="1" type="stmt"/>
+      <line num="25" count="1" type="stmt"/>
+      <line num="30" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="31" count="1" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="40" count="2" type="cond" truecount="2" falsecount="0"/>
+      <line num="41" count="1" type="stmt"/>
+      <line num="47" count="1" type="stmt"/>
+      <line num="50" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

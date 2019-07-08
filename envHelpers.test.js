@@ -60,7 +60,7 @@ describe('envHelpers', () => {
   });
 
   describe('getRepoInfo', () => {
-    test('should return an null when not invoked from Travis or CircleCI', () => {
+    test('should return null when not invoked from Travis or CircleCI', () => {
       expect(getRepoInfo()).toBeNull();
     });
 
@@ -73,13 +73,13 @@ describe('envHelpers', () => {
       });
     });
 
-    test('should return pr information when invoked from CircleCI', () => {
-      process.env.CIRCLE_PULL_REQUEST = 'https://github.com/username/reponame/pull/30';
-      process.env.CIRCLE_SHA1 = '33333333';
+    test('should return repo information when invoked from CircleCI', () => {
+      process.env.CIRCLE_PROJECT_USERNAME = 'owner_name';
+      process.env.CIRCLE_PROJECT_REPONAME = 'repo_name';
 
-      expect(getPrInfo()).toEqual({
-        number: 30,
-        sha: '33333333'
+      expect(getRepoInfo()).toEqual({
+        owner: 'owner_name',
+        name: 'repo_name'
       });
     });
   });
