@@ -1,7 +1,7 @@
 'use strict';
 const {isInvokedFromPr, getPrInfo, getRepoInfo} = require('./envHelpers');
 
-describe('runlighthouse', () => {
+describe('envHelpers', () => {
   beforeEach(() => {
     delete process.env.TRAVIS_EVENT_TYPE;
     delete process.env.TRAVIS_PULL_REQUEST;
