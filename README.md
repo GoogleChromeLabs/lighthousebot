@@ -2,13 +2,13 @@
 
 This repo contains the frontend and backend for running Lighthouse in CI and integration with Github Pull Requests. An example web service is hosted for demo purposes.
 
-**Note**: This repo was previously named "lighthouse-ci". 
+**Note**: This repo was previously named "lighthouse-ci".
 
 ## Auditing GitHub Pull Requests
 
 > Please note: This drop in service is considered **Beta**. There are no SLAs or uptime guarantees. If you're interested in running your own CI server in a Docker container, check out [Running your own CI server](#running-your-own-ci-server).
 
-Lighthouse can be setup as part of your CI on **Travis only**. As new pull requests come in, the **Lighthouse Bot tests the changes and reports back the new score**.
+Lighthouse can be setup as part of your CI on **Travis/CircleCI only**. As new pull requests come in, the **Lighthouse Bot tests the changes and reports back the new score**.
 
 <img width="700" alt="Run Lighthouse on Github PRs" src="https://user-images.githubusercontent.com/238208/27059055-70ba6e86-4f89-11e7-8ead-932aab0f2634.png">
 
@@ -25,9 +25,15 @@ First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator o
 [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will eventually be
 enforced and are necessary so we can contact you when there are changes to the CI system.
 
-Once you have a key, update Travis settings by adding an `LIGHTHOUSE_API_KEY` environment variables with your key:
+Once you have a key, update Travis/CircleCI settings by adding an `LIGHTHOUSE_API_KEY` environment variables with your key:
+
+**Travis:**
 
 <img width="875" alt="Travis LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/2837064/32105842-2635de42-bb2a-11e7-983a-921a802d38b3.jpg">
+
+**CircleCI:**
+
+<img width="875" alt="CircleCI LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/26760571/60830641-55653680-a1c0-11e9-91a5-17abd2a320be.png">
 
 The `lighthousebot` script will include your key in requests made to the CI server.
 
@@ -37,11 +43,25 @@ We recommend deploying your PR to a real staging server instead of running a loc
 A staging environment will produce realistic performance numbers that are
 more representative of your production setup. The Lighthouse report will be more accurate.
 
+**Travis:**
+
 In `.travis.yml`, add an  `after_success` that **deploys the PR's changes to a staging server**.
 
 ```bash
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
+```
+
+**CircleCI:**
+
+In `.circleci/config.yml`, add a build step  that **deploys the PR's changes to a staging server**.
+
+```bash
+after_success:
+  steps:
+    - run:
+        name: Deploy to staging
+        command: ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
 ```
 
  Since every hosting environment has different deployment setups, the implementation of `deploy.sh` is left to the reader.
@@ -52,7 +72,9 @@ after_success:
 
 Install the script:
 
-    npm i --save-dev https://github.com/GoogleChromeLabs/lighthousebot
+```bash
+npm i --save-dev https://github.com/GoogleChromeLabs/lighthousebot
+```
 
 Add an NPM script to your `package.json`:
 
@@ -62,7 +84,9 @@ Add an NPM script to your `package.json`:
 }
 ```
 
-Next, in `.travis.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
+**Travis:**
+
+In `.travis.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
 
 ```yml
 install:
@@ -70,6 +94,23 @@ install:
 after_success:
   - ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
   - npm run lh -- https://staging.example.com
+```
+
+**CircleCI:**
+
+In `.circleci/config.yml` call [`npm run lh`][runlighthouse-link] as the last step in `after_success`:
+
+```yml
+install:
+  - npm install # make sure to install the deps when CircleCI runs.
+after_success:
+  steps:
+    - run:
+        name: Deploy to staging
+        command: ./deploy.sh # TODO(you): deploy the PR changes to your staging server.
+    - run:
+        name: Start lighthouse bot
+        command: npm run lh -- https://staging.example.com
 ```
 
 When Lighthouse is done auditing the URL, the bot will post a comment to the pull
@@ -154,7 +195,7 @@ For the backend, see [builder/README.md](https://github.com/GoogleChromeLabs/lig
 Other changes, to the "Development" section:
 
 - Create a personal OAuth token in https://github.com/settings/tokens. Drop it in `frontend/.oauth_token`.
-- Add a `LIGHTHOUSE_CI_HOST` env variable to Travis settings that points to your own URL. The one where you deploy the Docker container.
+- Add a `LIGHTHOUSE_CI_HOST` env variable to Travis/CircleCI settings that points to your own URL. The one where you deploy the Docker container.
 
 ## Development
 
@@ -215,7 +256,7 @@ Relevant source:
 - `frontend/public/` - UI for https://lighthouse-ci.appspot.com/try.
 
 ### Bot CI server (frontend)
-> Server that responds to requests from Travis.
+> Server that responds to requests from Travis/CircleCI.
 
 REST endpoints:
 - `https://lighthouse-ci.appspot.com/run_on_chrome`
