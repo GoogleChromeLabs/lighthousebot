@@ -33,7 +33,7 @@ Once you have a key, update Travis/CircleCI settings by adding an `LIGHTHOUSE_AP
 
 **CircleCI:**
 
-<img width="875" alt="CircleCI LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/2837064/32105842-2635de42-bb2a-11e7-983a-921a802d38b3.jpg">
+<img width="875" alt="CircleCI LIGHTHOUSE_API_KEY env variable " src="https://user-images.githubusercontent.com/26760571/60830641-55653680-a1c0-11e9-91a5-17abd2a320be.png">
 
 The `lighthousebot` script will include your key in requests made to the CI server.
 
