@@ -20,6 +20,8 @@ To audit pull requests, do the following:
 
 First, add [lighthousebot](https://github.com/lighthousebot) as a collaborator on your repo. Lighthouse CI uses an OAuth token scoped to the `repo` permission in order to update the status of your PRs and post comments on the issue as the little Lighthouse icon.
 
+_* Until Lighthousebot accepts your invitation to collaborate, which is currently a lengthy manual process, it does not have permission to update the status of your PRs. However, it will post a comment on your PR._
+
 #### Get an API Key
 
 [Request an API Key](https://goo.gl/forms/9BzzhHd1sKzsvyC52). API keys will eventually be
