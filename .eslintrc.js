@@ -6,6 +6,7 @@ module.exports = {
     "node": true,
     "es6": true,
     "browser": true,
+    "jest": true,
   },
   "parserOptions": {
     "ecmaVersion": 8,

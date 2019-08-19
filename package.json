@@ -17,7 +17,9 @@
     "lighthousebot": "runlighthouse.js"
   },
   "scripts": {
-    "deploy": "./deploy.sh"
+    "deploy": "./deploy.sh",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "dependencies": {
     "minimist": "^1.2.0",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "eslint": "^5.6.1",
-    "eslint-config-google": "^0.10.0"
+    "eslint-config-google": "^0.10.0",
+    "jest": "^24.8.0"
   }
 }

@@ -19,6 +19,7 @@
 
 const fetch = require('node-fetch'); // polyfill
 const minimist = require('minimist');
+const {isInvokedFromPr, getPrInfo, getRepoInfo} = require('./envHelpers');
 
 const CI_HOST = process.env.LIGHTHOUSE_CI_HOST || 'https://lighthouse-ci.appspot.com';
 const API_KEY = process.env.LIGHTHOUSE_API_KEY || process.env.API_KEY;
@@ -124,20 +125,15 @@ function getConfig() {
   }
   console.log(`Using runner: ${config.runner}`);
 
-  config.pr = {
-    number: parseInt(process.env.TRAVIS_PULL_REQUEST, 10),
-    sha: process.env.TRAVIS_PULL_REQUEST_SHA
-  };
+  const pr = getPrInfo();
+  config.pr = pr;
 
-  const repoSlug = process.env.TRAVIS_PULL_REQUEST_SLUG;
-  if (!repoSlug) {
-    throw new Error('This script can only be run on Travis PR requests.');
+  const repo = getRepoInfo();
+  if (!repo) {
+    throw new Error('This script can only be run on Travis/CircleCI PR requests.');
   }
 
-  config.repo = {
-    owner: repoSlug.split('/')[0],
-    name: repoSlug.split('/')[1]
-  };
+  config.repo = repo;
 
   return config;
 }
@@ -181,8 +177,10 @@ function run(config) {
 
 // Run LH if this is a PR.
 const config = getConfig();
-if (process.env.TRAVIS_EVENT_TYPE === 'pull_request') {
+if (isInvokedFromPr()) {
   run(config);
 } else {
   console.log('Lighthouse is not run for non-PR commits.');
 }
+
+
