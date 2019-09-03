@@ -66,8 +66,8 @@ yarn restart
 
 This starts a server on `8080` and exposes a REST endpoint at `http://localhost:8080/ci`.
 By default, requests ask for an API key to help prevent abuse and associate 
-requests with users. However, uou don't have to use one in your own server. 
-If you don't to require keys from users, simply include the parameter but use a
+requests with users. However, you don't have to use one in your own server. 
+If you don't want to require keys from users, simply include the parameter but use a
 fake value (e.g. "abc123").
 
 **Examples**
