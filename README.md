@@ -98,7 +98,7 @@ after_success:
 #### Options
 
 ```bash
-$ lighthouse-ci -h
+$ lighthousebot -h
 
 Usage:
 runlighthouse.js [--perf,pwa,seo,a11y,bp=<score>] [--no-comment] [--runner=chrome,wpt] <url>
