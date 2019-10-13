@@ -20,6 +20,8 @@ const Github = require('@octokit/rest');
 const URL = require('url').URL;
 const URLSearchParams = require('url').URLSearchParams;
 
+const LIGHTHOUSE_BUILDER_HOST = process.env.LIGHTHOUSE_BUILDER_HOST || 'https://builder-dot-lighthouse-ci.appspot.com';
+
 class LighthouseCI {
   /**
    * @param {!string} token Github OAuth token that has repo:status access.
@@ -44,7 +46,7 @@ class LighthouseCI {
 
     // POST https://builder-dot-lighthouse-ci.appspot.com/ci
     // '{"output": "json", "url": <testUrl>}"'
-    return fetch('https://builder-dot-lighthouse-ci.appspot.com/ci', {
+    return fetch(`${LIGHTHOUSE_BUILDER_HOST}/ci`, {
       method: 'POST',
       body: JSON.stringify(body),
       headers
