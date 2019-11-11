@@ -1,8 +1,10 @@
-# Lighthouse Bot
+# Lighthouse Bot (deprecated)
 
-This repo contains the frontend and backend for running Lighthouse in CI and integration with Github Pull Requests. An example web service is hosted for demo purposes.
+**Update:** LighthouseBot has been deprecated and we now recommend using the official [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci) project to automate running Lighthouse for every commit, view the changes, and prevent regressions
 
-**Note**: This repo was previously named "lighthouse-ci". 
+## Historical README below
+
+This repo contained the frontend and backend for running Lighthouse in CI and integration with Github Pull Requests. An example web service is hosted for demo purposes.
 
 ## Auditing GitHub Pull Requests
 
