@@ -3,7 +3,7 @@ FROM node:10-slim
 LABEL maintainer="Eric Bidelman <ebidel@>"
 
 # Install utilities
-RUN apt-get update --fix-missing && apt-get -y upgrade
+RUN apt-get update --fix-missing && apt-get -y upgrade && apt-get install -y wget gnupg
 
 # Install latest chrome dev package.
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
