@@ -20,7 +20,7 @@
     "deploy": "./deploy.sh"
   },
   "dependencies": {
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.2",
     "node-fetch": "^2.2.0"
   },
   "devDependencies": {
