@@ -46,6 +46,26 @@ docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com --quie
 docker run -it --rm --cap-add=SYS_ADMIN lighthouse_ci --version
 ```
 
+**Note**
+
+In some cases docker instance require more shared memory than the default 64Mb otherwise tests will fail.
+To increase shared memory in the docker use:
+
+```
+docker run --shm-size=2g -it --rm --cap-add=SYS_ADMIN lighthouse_ci https://example.com
+```
+
+Also, lighthouse results vary a lot based on the CPU performance of machine on which tests are running.
+you can control the availiabilty of CPU to docker using:
+
+```
+docker run --cpus=".9" --shm-size=2g -dit -p 9000:9000 --rm --name lighthouse_ci --cap-add=SYS_ADMIN lighthouse_ci
+```
+
+This will provide 90% of host CPU cycles to docker. You can tune it as per your need. 
+Keep a check on CPU/Memory Power at the bottom of your lighthouse report for better and consistant results.
+
+
 ### Using the container as a web service (LaaS)
 
 The container also ships with a web service that supports a REST API. You can
